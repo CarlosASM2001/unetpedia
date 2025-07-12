@@ -204,10 +204,10 @@ class __ContentState extends State<_Content> {
                   FocusScope.of(context).unfocus();
 
                   if (_formKey.currentState!.validate()) {
-                    cubit.login(
-                      email: _emailController.text.trim(),
-                      password: _passwordController.text,
-                    );
+                    //cubit.login(
+                    //  email: _emailController.text.trim(),
+                    //  password: _passwordController.text,
+                    //);
                   }
                 },
               ),

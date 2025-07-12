@@ -219,10 +219,10 @@ class __ViewState extends State<_View> {
                 FocusScope.of(context).unfocus();
 
                 if (_formKey.currentState!.validate()) {
-                  cubit.changePassword(
-                    currentPassword: _currentPasswordController.text,
-                    newPassword: _passwordController.text,
-                  );
+                  // cubit.changePassword(
+                  //   currentPassword: _currentPasswordController.text,
+                  //   newPassword: _passwordController.text,
+                  // );
                 }
               },
             ),

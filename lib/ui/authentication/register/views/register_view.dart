@@ -285,19 +285,19 @@ class __ContentState extends State<_Content> {
                       state.degreeSelected?.id != null &&
                       state.photoSelected != null) {
                     // Creando entidad de registro
-                    final body = RegisterRequestModel(
-                      email: _emailController.text.trim(),
-                      password: _passwordController.text,
-                      name: _nameController.text.trim(),
-                      lastName: _lastNameController.text.trim(),
-                      description: _descriptionController.text.trim(),
-                      career: state.degreeSelected!.id!,
-                      role: 2, // 1 Tutor, 2 Estudiante
-                      profilePhotoName: state.photoSelected!.name,
-                    );
+                    // final body = RegisterRequestModel(
+                    //   email: _emailController.text.trim(),
+                    //   password: _passwordController.text,
+                    //   name: _nameController.text.trim(),
+                    //   lastName: _lastNameController.text.trim(),
+                    //   description: _descriptionController.text.trim(),
+                    //   career: state.degreeSelected!.id!,
+                    //   role: 2, // 1 Tutor, 2 Estudiante
+                    //   profilePhotoName: state.photoSelected!.name,
+                    // );
 
                     // Consumiendo el endpoint de registro
-                    cubit.register(body);
+                    //cubit.register(body);
                   }
                 },
               );

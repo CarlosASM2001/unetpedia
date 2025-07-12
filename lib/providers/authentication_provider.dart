@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+/*import 'package:dio/dio.dart';
 import 'package:dartz/dartz.dart';
 import 'package:unetpedia/api/api.dart';
 import 'package:unetpedia/models/generic/generic.dart';
@@ -92,4 +92,4 @@ class AuthenticationProvider {
       return Left(DataException(details: e.toString()));
     }
   }
-}
+}*/
