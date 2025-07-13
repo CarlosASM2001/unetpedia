@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/models/generic/generic.dart';
+import 'package:unetpedia/providers/firestore_provider.dart';
 import 'package:unetpedia/providers/authentication_provider.dart';
 import 'package:unetpedia/models/authentication/authentication.dart';
 
@@ -9,7 +10,8 @@ part 'authentication_state.dart';
 class AuthenticationCubit extends Cubit<AuthenticationState> {
   AuthenticationCubit() : super(const AuthenticationState());
 
-  //final _authenticationProvider = AuthenticationProvider();
+  final _authenticationProvider = AuthenticationProvider();
+  final _firestoreProvider = FirestoreProvider();
 
   void changePasswordVisibility() {
     emit(state.copyWith(showPassword: !state.showPassword));
@@ -58,42 +60,50 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   // Basic Register
   // ========================================================================
 
-  // Future<void> register(RegisterRequestModel data) async {
-  //   if (state.status == WidgetStatus.loading) return;
-  //   emit(state.copyWith(status: WidgetStatus.loading));
-  //
-  //   final response = await _authenticationProvider.register(data: data);
-  //
-  //   return response.fold((l) {
-  //     emit(state.copyWith(status: WidgetStatus.error, errorText: l.details));
-  //   }, (r) async {
-  //     emit(state.copyWith(registerResponseModel: Wrapped.value(r)));
-  //
-  //     await _uploadPhoto();
-  //     login(email: data.email, password: data.password);
-  //   });
-  // }
+  Future<void> register(RegisterRequestModel data) async {
+    if (state.genericStatus == WidgetStatus.loading) return;
+    emit(state.copyWith(genericStatus: WidgetStatus.loading));
 
-  // Future<void> _uploadPhoto() async {
-  //   if (state.presignedStatus == WidgetStatus.loading) return;
-  //   emit(state.copyWith(presignedStatus: WidgetStatus.loading));
-  //
-  //   final response = await _authenticationProvider.uploadPhoto(
-  //     presignedUrl: state.registerResponseModel!.presignedURL!,
-  //     photo: state.photoSelected!,
-  //   );
-  //
-  //   return response.fold((l) {
-  //     emit(state.copyWith(
-  //       presignedStatus: WidgetStatus.error,
-  //       errorText: l.details,
-  //       status: WidgetStatus.initial,
-  //     ));
-  //   }, (r) async {
-  //     emit(state.copyWith(
-  //         presignedStatus: WidgetStatus.success, status: WidgetStatus.initial));
-  //   });
-  // }
+    final response = await _authenticationProvider.createUser(data: data);
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            genericStatus: WidgetStatus.error,
+            errorText: l.details,
+          ),
+        );
+      },
+      (r) async {
+        // Validando campos
+        if (r.user?.uid == null || state.photoSelected?.file == null) {
+          emit(
+            state.copyWith(
+              genericStatus: WidgetStatus.error,
+              errorText: "Campos invalidos.",
+            ),
+          );
+          return;
+        }
+
+        // 1. Creando documento con la informacion completa del registro
+        await _firestoreProvider.createUserDocument(data, r.user!.uid);
+
+        // 2. Subiendo imagen de perfil
+        final url = await _firestoreProvider.uploadImage(
+          storagePath: StoragePath.profile,
+          path: "${r.user!.uid}/${DateTime.now().toString()}.jpg",
+          image: state.photoSelected!.file,
+        );
+
+        // 3. Actualizando campo de foto de perfil con la url en el documento
+        await _firestoreProvider.updateProfileUrl(r.user!.uid, url);
+
+        emit(state.copyWith(genericStatus: WidgetStatus.success));
+      },
+    );
+  }
 
   // ========================================================================
   // Change Password

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/providers/providers.dart';
 import 'package:unetpedia/models/generic/generic.dart';
 import 'package:unetpedia/models/subject/subject.dart';
-import 'package:unetpedia/models/authentication/register_response_model.dart';
 
 part 'general_state.dart';
 

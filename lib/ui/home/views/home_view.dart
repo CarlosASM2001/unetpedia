@@ -124,21 +124,21 @@ class _Header extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BlocBuilder<GeneralCubit, GeneralState>(
-            buildWhen: (p, c) => (p.userResponseModel != c.userResponseModel),
-            builder: (context, state) {
-              return Text(
-                ((state.userResponseModel?.user?.name ?? "").isNotEmpty)
-                    ? "Hola ${state.userResponseModel?.user?.name}."
-                    : "Hola ...",
-                style: const TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              );
-            },
-          ),
+          // BlocBuilder<GeneralCubit, GeneralState>(
+          //   buildWhen: (p, c) => (p.userResponseModel != c.userResponseModel),
+          //   builder: (context, state) {
+          //     return Text(
+          //       ((state.userResponseModel?.user?.name ?? "").isNotEmpty)
+          //           ? "Hola ${state.userResponseModel?.user?.name}."
+          //           : "Hola ...",
+          //       style: const TextStyle(
+          //         fontSize: 18,
+          //         color: Colors.white,
+          //         fontWeight: FontWeight.w500,
+          //       ),
+          //     );
+          //   },
+          // ),
           const SizedBox(height: 2),
           const Text(
             "Encuentra el contenido que quieres aprender.",
