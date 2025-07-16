@@ -6,6 +6,7 @@ import 'package:unetpedia/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:unetpedia/core/routes/routes.dart';
 import 'package:unetpedia/utils/local_storage.dart';
+import 'package:unetpedia/providers/career_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +14,14 @@ Future<void> main() async {
 
   await LocalStorage.init();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  
+  // Initialize careers if needed
+  try {
+    final careerProvider = CareerProvider();
+    await careerProvider.initializeCareers();
+  } catch (e) {
+    print("Error initializing careers: $e");
+  }
 
   runApp(
     MultiBlocProvider(

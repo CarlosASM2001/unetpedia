@@ -6,16 +6,20 @@ import 'package:unetpedia/models/generic/generic.dart';
 import 'package:unetpedia/models/subject/subject.dart';
 import 'package:unetpedia/core/constants/end_point_constant.dart';
 import 'package:unetpedia/models/authentication/register_response_model.dart';
+import 'package:unetpedia/providers/career_provider.dart';
 
 class GenericProvider {
+  final CareerProvider _careerProvider = CareerProvider();
+
   // Get Degrees List
   Future<Either<DataException, DegreesResponseModel>> getDegrees() async {
     try {
-      final response = await Api().dio.get(EndPointConstant.getDegrees);
-
-      return Right(DegreesResponseModel.fromJson(response.data));
-    } on DioException catch (e) {
-      return Left(DataException(details: e.response?.data.toString()));
+      final careers = await _careerProvider.getCareers();
+      
+      return Right(DegreesResponseModel(
+        data: careers,
+        count: careers.length,
+      ));
     } catch (e) {
       return Left(DataException(details: e.toString()));
     }
