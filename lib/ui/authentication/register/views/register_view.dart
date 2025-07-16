@@ -235,7 +235,7 @@ class __ContentState extends State<_Content> {
                   labelText: "Seleccionar Carrera",
                   hintText: "Selecciona",
                   keyboardType: TextInputType.text,
-                  //validator: (value) => Validators.emptyValidation(value),
+                  validator: (value) => Validators.emptyValidation(value),
                   controller: _degreeController,
                   readOnly: true,
                   suffixIcon: const Icon(
@@ -268,14 +268,14 @@ class __ContentState extends State<_Content> {
               builder: (context, state) {
                 return GenericButton(
                   text: "Registrar",
-                  onTap: (state.photoSelected == null)
+                  onTap: (state.photoSelected == null || state.degreeSelected == null)
                       ? null
                       : () {
                           FocusScope.of(context).unfocus();
 
                           // Validando el formulario
                           if (_formKey.currentState!.validate() &&
-                              /*state.degreeSelected?.id != null &&*/
+                              state.degreeSelected?.id != null &&
                               state.photoSelected != null) {
                             // Creando entidad de registro
                             final body = RegisterRequestModel(
@@ -285,8 +285,7 @@ class __ContentState extends State<_Content> {
                               lastName: _lastNameController.text.trim(),
                               description: _descriptionController.text.trim(),
                               role: "user",
-                              //career: state.degreeSelected!.id!,
-                              //role: 2, // 1 Tutor, 2 Estudiante
+                              careerId: state.degreeSelected!.id.toString(),
                             );
 
                             // Consumiendo el endpoint de registro

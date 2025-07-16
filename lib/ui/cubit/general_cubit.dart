@@ -47,31 +47,31 @@ class GeneralCubit extends Cubit<GeneralState> {
   // Degree
   // =======================================================================
 
-  // Future<void> getDegrees() async {
-  //   if (state.degreesStatus == WidgetStatus.loading) return;
-  //   emit(state.copyWith(degreesStatus: WidgetStatus.loading));
-  //
-  //   final response = await _genericProvider.getDegrees();
-  //
-  //   return response.fold(
-  //     (l) {
-  //       emit(
-  //         state.copyWith(
-  //           degreesStatus: WidgetStatus.error,
-  //           errorText: l.details,
-  //         ),
-  //       );
-  //     },
-  //     (r) async {
-  //       emit(
-  //         state.copyWith(
-  //           degreesStatus: WidgetStatus.success,
-  //           degrees: Wrapped.value(r),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
+  Future<void> getDegrees() async {
+    if (state.degreesStatus == WidgetStatus.loading) return;
+    emit(state.copyWith(degreesStatus: WidgetStatus.loading));
+
+    final response = await _genericProvider.getDegrees();
+
+    return response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            degreesStatus: WidgetStatus.error,
+            errorText: l.details,
+          ),
+        );
+      },
+      (r) async {
+        emit(
+          state.copyWith(
+            degreesStatus: WidgetStatus.success,
+            degrees: Wrapped.value(r),
+          ),
+        );
+      },
+    );
+  }
 
   // =======================================================================
   // Authentication

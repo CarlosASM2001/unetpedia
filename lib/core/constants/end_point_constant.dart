@@ -1,6 +1,6 @@
 class EndPointConstant {
   // General
-  //static const String getDegrees = "career";
+  static const String getDegrees = "career";
 
   // Autentificacion
   // static const String login = 'user/login';

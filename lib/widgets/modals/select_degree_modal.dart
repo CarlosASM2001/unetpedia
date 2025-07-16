@@ -21,9 +21,9 @@ class _SelectDegreeModalState extends State<SelectDegreeModal> {
   void initState() {
     cubit = context.read<GeneralCubit>();
 
-    //if ((cubit.state.degrees?.data ?? []).isEmpty) {
-    //  cubit.getDegrees();
-    //}
+    if ((cubit.state.degrees?.data ?? []).isEmpty) {
+      cubit.getDegrees();
+    }
 
     super.initState();
   }
