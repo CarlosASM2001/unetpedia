@@ -21,13 +21,23 @@ class _SelectDegreeModalState extends State<SelectDegreeModal> {
   void initState() {
     cubit = context.read<GeneralCubit>();
 
-    if ((cubit.state.degrees?.data ?? []).isEmpty) {
-      cubit.GetCareers();
-      cubit.initializeCareers();
-
+    if ((cubit.state.careers ?? []).isEmpty) {
+      _initializeCareers();
     }
 
     super.initState();
+  }
+
+  Future<void> _initializeCareers() async {
+    try{
+      await cubit.initializeCareers();
+
+      await cubit.GetCareers();
+    }catch (e) {
+      print('Error initializing careers: $e');
+      // Handle error if needed
+      cubit.GetCareers();
+    }
   }
 
   //final List _degrees = const [

@@ -7,10 +7,9 @@ import 'package:unetpedia/models/subject/subject.dart';
 part 'general_state.dart';
 
 class GeneralCubit extends Cubit<GeneralState> {
-  GeneralCubit() : super(const GeneralState()){
+  GeneralCubit() : super(const GeneralState());
     // Initialize careers when the cubit is created
-    initializeCareers();
-  }
+
 
   final _genericProvider = GenericProvider();
   final _careerProvider = CareerProvider();
