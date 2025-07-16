@@ -8,7 +8,7 @@ import 'package:unetpedia/widgets/generic_error_component.dart';
 class SelectDegreeModal extends StatefulWidget {
   const SelectDegreeModal({super.key, required this.onDegreeSelected});
 
-  final void Function(DegreeResponseModel) onDegreeSelected;
+  final void Function(Career) onDegreeSelected;
 
   @override
   State<SelectDegreeModal> createState() => _SelectDegreeModalState();
@@ -21,9 +21,11 @@ class _SelectDegreeModalState extends State<SelectDegreeModal> {
   void initState() {
     cubit = context.read<GeneralCubit>();
 
-    //if ((cubit.state.degrees?.data ?? []).isEmpty) {
-    //  cubit.getDegrees();
-    //}
+    if ((cubit.state.degrees?.data ?? []).isEmpty) {
+      cubit.GetCareers();
+      cubit.initializeCareers();
+
+    }
 
     super.initState();
   }
@@ -69,9 +71,9 @@ class _SelectDegreeModalState extends State<SelectDegreeModal> {
           ),
           const SizedBox(height: 12),
           BlocBuilder<GeneralCubit, GeneralState>(
-            buildWhen: (p, c) => (p.degreesStatus != c.degreesStatus),
+            buildWhen: (p, c) => (p.careersStatus != c.careersStatus),
             builder: (context, state) {
-              switch (state.degreesStatus) {
+              switch (state.careersStatus) {
                 case WidgetStatus.error:
                   return const Expanded(
                     child: Center(child: GenericErrorComponent()),
@@ -83,17 +85,15 @@ class _SelectDegreeModalState extends State<SelectDegreeModal> {
                 case WidgetStatus.success:
                   return Expanded(
                     child: ListView.builder(
-                      itemCount: (state.degrees?.data ?? []).length,
+                      itemCount: (state.careers ?? []).length,
                       itemBuilder: (context, index) {
-                        final degree = state.degrees?.data?[index];
+                        final career = state.careers? [index];
 
                         return _DegreeTile(
-                          title: degree?.name ?? "N/A",
+                          title: career?.name ?? "N/A",
                           onPresed: () {
-                            if (degree != null) {
-                              widget.onDegreeSelected(
-                                state.degrees!.data![index],
-                              );
+                            if (career != null) {
+                              widget.onDegreeSelected(career);
                             }
                             Navigator.pop(context);
                           },
