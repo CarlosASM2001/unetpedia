@@ -6,3 +6,4 @@ export "generic_enums.dart";
 export "pages_model.dart";
 export "photo_model.dart";
 export "user_response_model.dart";
+export "career_model.dart";

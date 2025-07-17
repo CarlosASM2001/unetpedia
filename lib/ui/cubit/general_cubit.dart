@@ -8,8 +8,11 @@ part 'general_state.dart';
 
 class GeneralCubit extends Cubit<GeneralState> {
   GeneralCubit() : super(const GeneralState());
+    // Initialize careers when the cubit is created
+
 
   final _genericProvider = GenericProvider();
+  final _careerProvider = CareerProvider();
   // final _authenticationProvider = AuthenticationProvider();
 
   void clean() => emit(const GeneralState());
@@ -42,6 +45,43 @@ class GeneralCubit extends Cubit<GeneralState> {
   void selectSubject(SubjectResponseModel? value) {
     emit(state.copyWith(subjectSelected: Wrapped.value(value)));
   }
+
+  // =======================================================================
+  // Careers
+  // =======================================================================
+
+  Future<void> GetCareers() async {
+    if (state.careersStatus == WidgetStatus.loading) return;
+    emit(state.copyWith(careersStatus: WidgetStatus.loading));
+
+    try{
+      final careers = await _careerProvider.getCareers();
+      emit(
+        state.copyWith(
+          careersStatus: WidgetStatus.success,
+          careers: Wrapped.value(careers),
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          careersStatus: WidgetStatus.error,
+          errorText: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> initializeCareers() async {
+    try {
+
+      await _careerProvider.initializeCareers();
+      
+    } catch (e) {
+      print('Error initializing careers: $e');
+    }
+  }
+
 
   // =======================================================================
   // Degree

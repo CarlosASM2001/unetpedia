@@ -11,6 +11,7 @@ import 'package:unetpedia/widgets/buttons/generic_button.dart';
 import 'package:unetpedia/ui/authentication/authentication.dart';
 import 'package:unetpedia/widgets/dialogs/generic_status_dialog.dart';
 import 'package:unetpedia/models/authentication/register_request_model.dart';
+import 'package:unetpedia/models/generic/generic.dart';
 
 class RegisterView extends StatelessWidget {
   const RegisterView({super.key});
@@ -235,7 +236,7 @@ class __ContentState extends State<_Content> {
                   labelText: "Seleccionar Carrera",
                   hintText: "Selecciona",
                   keyboardType: TextInputType.text,
-                  //validator: (value) => Validators.emptyValidation(value),
+                  validator: (value) => Validators.emptyValidation(value),
                   controller: _degreeController,
                   readOnly: true,
                   suffixIcon: const Icon(
@@ -275,7 +276,7 @@ class __ContentState extends State<_Content> {
 
                           // Validando el formulario
                           if (_formKey.currentState!.validate() &&
-                              /*state.degreeSelected?.id != null &&*/
+                              state.degreeSelected?.id != null &&
                               state.photoSelected != null) {
                             // Creando entidad de registro
                             final body = RegisterRequestModel(
@@ -285,7 +286,7 @@ class __ContentState extends State<_Content> {
                               lastName: _lastNameController.text.trim(),
                               description: _descriptionController.text.trim(),
                               role: "user",
-                              //career: state.degreeSelected!.id!,
+                              careerId: state.degreeSelected!.id!,
                               //role: 2, // 1 Tutor, 2 Estudiante
                             );
 

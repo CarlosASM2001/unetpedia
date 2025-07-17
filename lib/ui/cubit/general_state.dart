@@ -5,6 +5,8 @@ class GeneralState extends Equatable {
     this.errorText = "",
     this.degrees,
     this.degreesStatus = WidgetStatus.initial,
+    this.careers,
+    this.careersStatus = WidgetStatus.initial,
     this.getUserStatus = WidgetStatus.initial,
     this.logOutStatus = WidgetStatus.initial,
     this.categoryStatus = WidgetStatus.initial,
@@ -24,6 +26,12 @@ class GeneralState extends Equatable {
   // Degrees
   final WidgetStatus degreesStatus;
   final DegreesResponseModel? degrees;
+
+  // Careers
+  final WidgetStatus careersStatus;
+  final List<Career>? careers;
+
+
 
   // Authentication
   final WidgetStatus getUserStatus;
@@ -47,6 +55,8 @@ class GeneralState extends Equatable {
     errorText,
     degrees,
     degreesStatus,
+    careers,
+    careersStatus,
     getUserStatus,
     logOutStatus,
     categoryStatus,
@@ -64,6 +74,8 @@ class GeneralState extends Equatable {
     String? errorText,
     Wrapped<DegreesResponseModel?>? degrees,
     WidgetStatus? degreesStatus,
+    Wrapped<List<Career>?>? careers,
+    WidgetStatus? careersStatus,
     WidgetStatus? getUserStatus,
     WidgetStatus? logOutStatus,
     WidgetStatus? categoryStatus,
@@ -80,6 +92,8 @@ class GeneralState extends Equatable {
       errorText: errorText ?? this.errorText,
       degrees: degrees != null ? degrees.value : this.degrees,
       degreesStatus: degreesStatus ?? this.degreesStatus,
+      careers: careers != null ? careers.value : this.careers,
+      careersStatus: careersStatus ?? this.careersStatus,
       getUserStatus: getUserStatus ?? this.getUserStatus,
       logOutStatus: logOutStatus ?? this.logOutStatus,
       categoryStatus: categoryStatus ?? this.categoryStatus,

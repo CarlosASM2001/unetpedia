@@ -25,7 +25,7 @@ class AuthenticationState extends Equatable {
 
   // Register
   final PhotoModel? photoSelected;
-  final DegreeResponseModel? degreeSelected;
+  final Career? degreeSelected;
   final WidgetStatus presignedStatus;
 
   // Forgot Password
@@ -49,7 +49,7 @@ class AuthenticationState extends Equatable {
     bool? showPassword,
     bool? rememberMe,
     Wrapped<PhotoModel?>? photoSelected,
-    Wrapped<DegreeResponseModel?>? degreeSelected,
+    Wrapped<Career?>? degreeSelected,
     Wrapped<String?>? email,
     Wrapped<String?>? password,
     WidgetStatus? presignedStatus,
