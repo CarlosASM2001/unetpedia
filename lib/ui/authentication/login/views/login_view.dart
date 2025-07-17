@@ -25,38 +25,69 @@ class LoginView extends StatelessWidget {
           listenWhen: (p, c) => (p.genericStatus != c.genericStatus),
           listener: (context, state) async {
             switch (state.genericStatus) {
+              case WidgetStatus.loading:
+                showDialog<void>(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => PopScope(
+                    canPop: false,
+                    child: Center(child: LoadingIndicator()),
+                  ),
+                );
+                break;
+
               case WidgetStatus.error:
                 showDialog<void>(
                   context: context,
+                  barrierDismissible: false,
                   builder: (context) => GenericStatusDialog(
                     description: state.errorText,
                     isErrorDialog: true,
                   ),
                 );
                 break;
-              case WidgetStatus.success:
-                Navigator.pushReplacementNamed(context, HomeView.routeName);
 
-                //if (state.loginResponseModel?.accessToken != null) {
-                //  // Guardando data en cache
-                //  await LocalStorage.setSession(
-                //    userId: state.loginResponseModel?.userId.toString(),
-                //    accessToken: state.loginResponseModel?.accessToken,
-                //  );
-                //
-                //  // Guardando credenciales de usuario si es necesario
-                //  if (state.rememberMe) {
-                //    await LocalStorage.setCredentials(
-                //      email: state.email,
-                //      password: state.password,
-                //    );
-                //  } else {
-                //    await LocalStorage.deleteCredentials();
-                //  }
-                //
-                //  // ignore: use_build_context_synchronously
-                //  Navigator.pushReplacementNamed(context, HomeView.routeName);
-                //}
+              case WidgetStatus.success:
+
+                // Guardando credenciales de usuario si es necesario
+                if (state.rememberMe) {
+                  await LocalStorage.setCredentials(
+                    email: state.email,
+                    password: state.password,
+                  );
+                } else {
+                  await LocalStorage.deleteCredentials();
+                }
+
+                if (!context.mounted) return;
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  HomeView.routeName,
+                  (Route route) => false,
+                );
+
+                /*if (state.loginResponseModel?.accessToken != null) {
+                  // Guardando data en cache
+                  await LocalStorage.setSession(
+                    userId: state.loginResponseModel?.userId.toString(),
+                    accessToken: state.loginResponseModel?.accessToken,
+                  );
+
+                  // Guardando credenciales de usuario si es necesario
+                  if (state.rememberMe) {
+                    await LocalStorage.setCredentials(
+                      email: state.email,
+                      password: state.password,
+                    );
+                  } else {
+                    await LocalStorage.deleteCredentials();
+                  }
+
+                  if (!context.mounted) return;
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    HomeView.routeName,
+                    (Route route) => false,
+                  );
+                }*/
                 break;
 
               default:
@@ -65,51 +96,37 @@ class LoginView extends StatelessWidget {
           },
           buildWhen: (p, c) => (p.genericStatus != c.genericStatus),
           builder: (context, state) {
-            return Stack(
+            return Column(
               children: [
-                Column(
-                  children: [
-                    const SafeArea(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 40,
-                          horizontal: 12,
-                        ),
-                        child: Text(
-                          "Hola, Bienvenido",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                const SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40, horizontal: 12),
+                    child: Text(
+                      "Hola, Bienvenido",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
                       ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 42,
-                          horizontal: 24,
-                        ),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16),
-                          ),
-                        ),
-                        child: const _Content(),
-                      ),
-                    ),
-                  ],
-                ),
-                if (state.genericStatus == WidgetStatus.loading)
-                  Positioned.fill(
-                    child: Container(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      child: const Center(child: LoadingIndicator()),
                     ),
                   ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 42,
+                      horizontal: 24,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                    ),
+                    child: const _Content(),
+                  ),
+                ),
               ],
             );
           },
@@ -128,17 +145,19 @@ class _Content extends StatefulWidget {
 
 class __ContentState extends State<_Content> {
   final _formKey = GlobalKey<FormState>();
-  late AuthenticationCubit cubit;
+
+  late AuthenticationCubit _cubit;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
 
   @override
   void initState() {
-    cubit = context.read<AuthenticationCubit>();
+    _cubit = context.read<AuthenticationCubit>();
     _emailController = TextEditingController(text: LocalStorage.getEmail());
     _passwordController = TextEditingController(
       text: LocalStorage.getPassword(),
     );
+
     super.initState();
   }
 
@@ -181,7 +200,7 @@ class __ContentState extends State<_Content> {
                     validator: (value) =>
                         Validators.loginPasswordValidation(value),
                     suffixIcon: IconButton(
-                      onPressed: () => cubit.changePasswordVisibility(),
+                      onPressed: () => _cubit.changePasswordVisibility(),
                       icon: Icon(
                         (state.showPassword)
                             ? Icons.visibility_off_rounded
@@ -207,10 +226,10 @@ class __ContentState extends State<_Content> {
                   FocusScope.of(context).unfocus();
 
                   if (_formKey.currentState!.validate()) {
-                    //cubit.login(
-                    //  email: _emailController.text.trim(),
-                    //  password: _passwordController.text,
-                    //);
+                    _cubit.login(
+                      email: _emailController.text.trim(),
+                      password: _passwordController.text,
+                    );
                   }
                 },
               ),
