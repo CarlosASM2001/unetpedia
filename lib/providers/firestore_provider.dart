@@ -1,8 +1,10 @@
 import 'dart:io';
-
+import 'package:dartz/dartz.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:unetpedia/models/generic/career_model.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
+import 'package:unetpedia/models/generic/data_exception_model.dart';
 import 'package:unetpedia/models/authentication/register_request_model.dart';
 
 class FirestoreProvider {
@@ -10,6 +12,7 @@ class FirestoreProvider {
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   final String _userCollection = "users";
+  final String _careersCollection = 'careers';
 
   // ========================================================================
   //  Users
@@ -76,6 +79,29 @@ class FirestoreProvider {
       return url;
     } catch (e) {
       return "Error";
+    }
+  }
+
+  // ========================================================================
+  //  Careers
+  // ========================================================================
+
+  // Get active careers by name
+  Future<Either<DataException, List<CareerModel>>> getCareers() async {
+    try {
+      final QuerySnapshot querySnapshot = await _db
+          .collection(_careersCollection)
+          .where('isActive', isEqualTo: true)
+          .orderBy('name')
+          .get();
+
+      return Right(
+        querySnapshot.docs
+            .map((doc) => CareerModel.fromFirestore(doc))
+            .toList(),
+      );
+    } catch (e) {
+      return Left(DataException(details: e.toString()));
     }
   }
 }

@@ -29,7 +29,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     emit(state.copyWith(photoSelected: Wrapped.value(photo)));
   }
 
-  void setDegree(Career value) {
+  void setDegree(CareerModel value) {
     emit(state.copyWith(degreeSelected: Wrapped.value(value)));
   }
 

@@ -1,7 +1,6 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Career {
+class CareerModel {
   final String id;
   final String name;
   final String? description;
@@ -9,7 +8,7 @@ class Career {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  Career({
+  CareerModel({
     required this.id,
     required this.name,
     this.description,
@@ -19,9 +18,9 @@ class Career {
   });
 
   // Convertir a Firestore document
-  factory Career.fromFirestore(DocumentSnapshot doc) {
+  factory CareerModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return Career(
+    return CareerModel(
       id: doc.id,
       name: data['name'] ?? '',
       description: data['description'],
@@ -43,8 +42,8 @@ class Career {
   }
 
   // Convert from JSON
-  factory Career.fromJson(Map<String, dynamic> json) {
-    return Career(
+  factory CareerModel.fromJson(Map<String, dynamic> json) {
+    return CareerModel(
       id: json['id'],
       name: json['name'],
       description: json['description'],
@@ -66,7 +65,7 @@ class Career {
     };
   }
 
-  Career copyWith({
+  CareerModel copyWith({
     String? id,
     String? name,
     String? description,
@@ -74,7 +73,7 @@ class Career {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Career(
+    return CareerModel(
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,

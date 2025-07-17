@@ -1,12 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:unetpedia/models/generic/file_model.dart';
 import 'package:unetpedia/models/generic/wrapped.dart';
+import 'package:unetpedia/models/generic/file_model.dart';
 import 'package:unetpedia/models/documents/documents.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
-import 'package:unetpedia/providers/documents_provider.dart';
 import 'package:unetpedia/models/subject/subjects_response_model.dart';
-import 'package:unetpedia/utils/generic_utils.dart';
 
 part 'subjects_state.dart';
 
@@ -176,8 +174,7 @@ class SubjectsCubit extends Cubit<SubjectsState> {
   }*/
 
   // Download
-
-  Future<void> _download() async {
+  /*Future<void> _download() async {
     final file = await GenericUtils.checkDownloadFile(
       url: state.documentDetail!.url!,
       fileName: state.documentDetail!.name!,
@@ -191,5 +188,5 @@ class SubjectsCubit extends Cubit<SubjectsState> {
         getDocumentsStatus: WidgetStatus.success,
       ),
     );
-  }
+  }*/
 }

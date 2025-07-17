@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:unetpedia/models/generic/generic.dart';
@@ -19,8 +18,6 @@ class AuthenticationProvider {
       );
 
       return Right(resp);
-    } on DioException catch (e) {
-      return Left(DataException(details: e.response?.data.toString()));
     } on FirebaseAuthException catch (e) {
       return Left(DataException(details: e.message));
     } catch (e) {
@@ -34,13 +31,11 @@ class AuthenticationProvider {
   }) async {
     try {
       final resp = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: data.email!,
-        password: data.password!,
+        email: data.email,
+        password: data.password,
       );
 
       return Right(resp);
-    } on DioException catch (e) {
-      return Left(DataException(details: e.response?.data.toString()));
     } on FirebaseAuthException catch (e) {
       return Left(DataException(details: e.message));
     } catch (e) {
@@ -54,8 +49,6 @@ class AuthenticationProvider {
       await _firebaseAuth.signOut();
 
       return Right("ok");
-    } on DioException catch (e) {
-      return Left(DataException(details: e.response?.data.toString()));
     } catch (e) {
       return Left(DataException(details: e.toString()));
     }
@@ -69,8 +62,6 @@ class AuthenticationProvider {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
 
       return Right("ok");
-    } on DioException catch (e) {
-      return Left(DataException(details: e.response?.data.toString()));
     } on FirebaseAuthException catch (e) {
       return Left(DataException(details: e.message));
     } catch (e) {

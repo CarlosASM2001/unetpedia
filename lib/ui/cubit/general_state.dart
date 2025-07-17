@@ -3,8 +3,6 @@ part of 'general_cubit.dart';
 class GeneralState extends Equatable {
   const GeneralState({
     this.errorText = "",
-    this.degrees,
-    this.degreesStatus = WidgetStatus.initial,
     this.careers,
     this.careersStatus = WidgetStatus.initial,
     this.getUserStatus = WidgetStatus.initial,
@@ -23,15 +21,9 @@ class GeneralState extends Equatable {
   // General
   final String errorText;
 
-  // Degrees
-  final WidgetStatus degreesStatus;
-  final DegreesResponseModel? degrees;
-
   // Careers
   final WidgetStatus careersStatus;
-  final List<Career>? careers;
-
-
+  final List<CareerModel>? careers;
 
   // Authentication
   final WidgetStatus getUserStatus;
@@ -53,8 +45,6 @@ class GeneralState extends Equatable {
   @override
   List<Object?> get props => [
     errorText,
-    degrees,
-    degreesStatus,
     careers,
     careersStatus,
     getUserStatus,
@@ -72,9 +62,7 @@ class GeneralState extends Equatable {
 
   GeneralState copyWith({
     String? errorText,
-    Wrapped<DegreesResponseModel?>? degrees,
-    WidgetStatus? degreesStatus,
-    Wrapped<List<Career>?>? careers,
+    Wrapped<List<CareerModel>?>? careers,
     WidgetStatus? careersStatus,
     WidgetStatus? getUserStatus,
     WidgetStatus? logOutStatus,
@@ -90,8 +78,6 @@ class GeneralState extends Equatable {
   }) {
     return GeneralState(
       errorText: errorText ?? this.errorText,
-      degrees: degrees != null ? degrees.value : this.degrees,
-      degreesStatus: degreesStatus ?? this.degreesStatus,
       careers: careers != null ? careers.value : this.careers,
       careersStatus: careersStatus ?? this.careersStatus,
       getUserStatus: getUserStatus ?? this.getUserStatus,

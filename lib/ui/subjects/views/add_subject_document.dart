@@ -172,7 +172,7 @@ class __ViewState extends State<_View> {
 
                     if (_formKey.currentState!.validate() &&
                         state.fileSelected != null) {
-                      final genericCubit = context.read<GeneralCubit>();
+                      // final genericCubit = context.read<GeneralCubit>();
 
                       // cubit.createDocument(
                       //   category: genericCubit.state.categorySelected!.id!,

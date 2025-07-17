@@ -83,8 +83,8 @@ class __ContentState extends State<_Content> {
     scrollController = ScrollController();
 
     scrollController.addListener(() {
-      double position = scrollController.position.pixels;
-      double maxExtend = scrollController.position.maxScrollExtent;
+      // double position = scrollController.position.pixels;
+      // double maxExtend = scrollController.position.maxScrollExtent;
       // if (position > maxExtend - 30) {
       //   cubit.getSubjects();
       // }

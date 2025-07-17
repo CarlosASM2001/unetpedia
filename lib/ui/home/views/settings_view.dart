@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:unetpedia/ui/cubit/cubit.dart';
 import 'package:unetpedia/ui/home/views/views.dart';
-import 'package:unetpedia/widgets/generic_network_image.dart';
 import 'package:unetpedia/widgets/main_appbar.dart';
 import 'package:unetpedia/utils/navigator_utils.dart';
 import 'package:unetpedia/core/constants/constant_colors.dart';

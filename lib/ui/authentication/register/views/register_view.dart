@@ -129,8 +129,10 @@ class __ContentState extends State<_Content> {
   }
 
   void _degreeSelectionModal() {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -138,16 +140,15 @@ class __ContentState extends State<_Content> {
           topRight: Radius.circular(20),
         ),
       ),
-      constraints: BoxConstraints(
-        minHeight: MediaQuery.of(context).size.height * 0.4,
-        maxHeight: MediaQuery.of(context).size.height * 0.4,
-      ),
       builder: (context) {
-        return SelectDegreeModal(
-          onDegreeSelected: (degree) {
-            _cubit.setDegree(degree);
-            _degreeController = TextEditingController(text: degree.name);
-          },
+        return FractionallySizedBox(
+          heightFactor: 0.7,
+          child: SelectDegreeModal(
+            onSelected: (degree) {
+              _cubit.setDegree(degree);
+              _degreeController = TextEditingController(text: degree.name);
+            },
+          ),
         );
       },
     );
@@ -233,12 +234,12 @@ class __ContentState extends State<_Content> {
               buildWhen: (p, c) => (p.degreeSelected != c.degreeSelected),
               builder: (context, state) {
                 return FormInput(
+                  readOnly: true,
                   labelText: "Seleccionar Carrera",
                   hintText: "Selecciona",
                   keyboardType: TextInputType.text,
                   validator: (value) => Validators.emptyValidation(value),
                   controller: _degreeController,
-                  readOnly: true,
                   suffixIcon: const Icon(
                     Icons.keyboard_arrow_down_rounded,
                     size: 24,
@@ -286,7 +287,7 @@ class __ContentState extends State<_Content> {
                               lastName: _lastNameController.text.trim(),
                               description: _descriptionController.text.trim(),
                               role: "user",
-                              careerId: state.degreeSelected!.id!,
+                              careerId: state.degreeSelected!.id,
                               //role: 2, // 1 Tutor, 2 Estudiante
                             );
 

@@ -6,54 +6,27 @@ import 'package:unetpedia/widgets/loading_indicator.dart';
 import 'package:unetpedia/widgets/generic_error_component.dart';
 
 class SelectDegreeModal extends StatefulWidget {
-  const SelectDegreeModal({super.key, required this.onDegreeSelected});
+  const SelectDegreeModal({super.key, required this.onSelected});
 
-  final void Function(Career) onDegreeSelected;
+  final void Function(CareerModel) onSelected;
 
   @override
   State<SelectDegreeModal> createState() => _SelectDegreeModalState();
 }
 
 class _SelectDegreeModalState extends State<SelectDegreeModal> {
-  late GeneralCubit cubit;
+  late GeneralCubit _cubit;
 
   @override
   void initState() {
-    cubit = context.read<GeneralCubit>();
+    _cubit = context.read<GeneralCubit>();
 
-    if ((cubit.state.careers ?? []).isEmpty) {
-      _initializeCareers();
+    if ((_cubit.state.careers ?? []).isEmpty) {
+      _cubit.getCareers();
     }
 
     super.initState();
   }
-
-  Future<void> _initializeCareers() async {
-    try{
-      await cubit.initializeCareers();
-
-      await cubit.GetCareers();
-    }catch (e) {
-      print('Error initializing careers: $e');
-      // Handle error if needed
-      cubit.GetCareers();
-    }
-  }
-
-  //final List _degrees = const [
-  //  "Arquitectura.",
-  //  "Ingeniería Civil.",
-  //  "Ingeniería Electrónica.",
-  //  "Ingeniería Ambiental.",
-  //  "Ingeniería Informática.",
-  //  "Ingeniería Industrial.",
-  //  "Ingeniería Mecánica.",
-  //  "Ingeniería en Producción Animal.",
-  //  "Licenciatura en Música.",
-  //  "Psicología.",
-  //  "TSU en Electromedicína.",
-  //  "TSU en Entrenamiento Deportivo.",
-  //];
 
   @override
   Widget build(BuildContext context) {
@@ -88,27 +61,32 @@ class _SelectDegreeModalState extends State<SelectDegreeModal> {
                   return const Expanded(
                     child: Center(child: GenericErrorComponent()),
                   );
+
                 case WidgetStatus.loading:
                   return const Expanded(
                     child: Center(child: LoadingIndicator()),
                   );
+
                 case WidgetStatus.success:
                   return Expanded(
-                    child: ListView.builder(
-                      itemCount: (state.careers ?? []).length,
-                      itemBuilder: (context, index) {
-                        final career = state.careers? [index];
+                    child: Scrollbar(
+                      child: ListView.builder(
+                        itemCount: (state.careers ?? []).length,
+                        padding: const EdgeInsets.all(0),
+                        itemBuilder: (context, index) {
+                          final career = state.careers?[index];
 
-                        return _DegreeTile(
-                          title: career?.name ?? "N/A",
-                          onPresed: () {
-                            if (career != null) {
-                              widget.onDegreeSelected(career);
-                            }
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
+                          return _DegreeTile(
+                            title: career?.name ?? "N/A",
+                            onPresed: () {
+                              if (career != null) {
+                                widget.onSelected(career);
+                              }
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      ),
                     ),
                   );
                 default:
