@@ -68,26 +68,4 @@ class AuthenticationProvider {
       return Left(DataException(details: e.toString()));
     }
   }
-
-  // Upload Profile Photo (After Register)
-  // Future<Either<DataException, String>> uploadPhoto({
-  //   required String presignedUrl,
-  //   required PhotoModel photo,
-  // }) async {
-  //   try {
-  //     final response = await Api().dioFormData.put(
-  //       presignedUrl,
-  //       options: Options(
-  //         headers: {"Content-Type": "image/png", "Connection": "keep-alive"},
-  //       ),
-  //       data: photo.file.readAsBytesSync(),
-  //     );
-  //
-  //     return Right(response.data.toString());
-  //   } on DioException catch (e) {
-  //     return Left(DataException(details: e.response?.data.toString()));
-  //   } catch (e) {
-  //     return Left(DataException(details: e.toString()));
-  //   }
-  // }
 }

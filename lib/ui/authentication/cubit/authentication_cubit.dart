@@ -56,6 +56,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         );
       },
       (r) async {
+        // 1. Actualizando campo de ultimo inicio de sesion
+        await _firestoreProvider.updateLastSignIn(r.user!.uid);
+
         emit(
           state.copyWith(
             email: Wrapped.value(email),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unetpedia/ui/ui.dart';
-import 'package:unetpedia/utils/local_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
 
 class App extends StatefulWidget {
@@ -15,7 +15,7 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
-    final isLogged = (LocalStorage.getAccessToken() ?? "").isNotEmpty;
+    final isLogged = (FirebaseAuth.instance.currentUser?.uid ?? "").isNotEmpty;
 
     // Caso cuando el usario esta logueado
     if (isLogged) {

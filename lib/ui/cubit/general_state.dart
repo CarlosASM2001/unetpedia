@@ -16,6 +16,7 @@ class GeneralState extends Equatable {
     this.subjectSelected,
     this.categoryQuery = "",
     this.subjectQuery = "",
+    this.user,
   });
 
   // General
@@ -26,6 +27,7 @@ class GeneralState extends Equatable {
   final List<CareerModel>? careers;
 
   // Authentication
+  final UserResponseModel? user;
   final WidgetStatus getUserStatus;
   final WidgetStatus logOutStatus;
 
@@ -58,6 +60,7 @@ class GeneralState extends Equatable {
     subjectSelected,
     categoryQuery,
     subjectQuery,
+    user,
   ];
 
   GeneralState copyWith({
@@ -75,6 +78,7 @@ class GeneralState extends Equatable {
     Wrapped<SubjectResponseModel?>? subjectSelected,
     String? categoryQuery,
     String? subjectQuery,
+    Wrapped<UserResponseModel?>? user,
   }) {
     return GeneralState(
       errorText: errorText ?? this.errorText,
@@ -99,6 +103,7 @@ class GeneralState extends Equatable {
           : this.subjectSelected,
       categoryQuery: categoryQuery ?? this.categoryQuery,
       subjectQuery: subjectQuery ?? this.subjectQuery,
+      user: user != null ? user.value : this.user,
     );
   }
 }

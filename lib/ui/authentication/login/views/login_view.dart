@@ -64,30 +64,6 @@ class LoginView extends StatelessWidget {
                   HomeView.routeName,
                   (Route route) => false,
                 );
-
-                /*if (state.loginResponseModel?.accessToken != null) {
-                  // Guardando data en cache
-                  await LocalStorage.setSession(
-                    userId: state.loginResponseModel?.userId.toString(),
-                    accessToken: state.loginResponseModel?.accessToken,
-                  );
-
-                  // Guardando credenciales de usuario si es necesario
-                  if (state.rememberMe) {
-                    await LocalStorage.setCredentials(
-                      email: state.email,
-                      password: state.password,
-                    );
-                  } else {
-                    await LocalStorage.deleteCredentials();
-                  }
-
-                  if (!context.mounted) return;
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    HomeView.routeName,
-                    (Route route) => false,
-                  );
-                }*/
                 break;
 
               default:
@@ -214,7 +190,12 @@ class __ContentState extends State<_Content> {
               ),
               const _RememberMe(),
               const SizedBox(height: 12),
-              //const _ForgotPasswordText(),
+              _RichTextComponent(
+                value: "¿Olvidaste tu contraseña?",
+                actionText: "Recuperar",
+                onPressed: () =>
+                    Navigator.pushNamed(context, ForgotPasswordView.routeName),
+              ),
             ],
           ),
           Column(
@@ -234,7 +215,12 @@ class __ContentState extends State<_Content> {
                 },
               ),
               const SizedBox(height: 28),
-              const _RegisterText(),
+              _RichTextComponent(
+                value: '¿No tienes cuenta?',
+                actionText: 'Regístrate',
+                onPressed: () =>
+                    Navigator.pushNamed(context, RegisterView.routeName),
+              ),
             ],
           ),
         ],
@@ -243,73 +229,38 @@ class __ContentState extends State<_Content> {
   }
 }
 
-// class _ForgotPasswordText extends StatelessWidget {
-//   const _ForgotPasswordText();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return RichText(
-//       textAlign: TextAlign.center,
-//       text: TextSpan(
-//         children: [
-//           const TextSpan(
-//             text: '¿Olvidaste tu contraseña?',
-//             style: TextStyle(
-//               color: Color(0xFF6C6C6C),
-//               fontSize: 16,
-//               fontWeight: FontWeight.w400,
-//             ),
-//           ),
-//           const TextSpan(text: ' '),
-//           TextSpan(
-//             text: 'Recuperar',
-//             style: const TextStyle(
-//               fontSize: 16,
-//               fontWeight: FontWeight.w700,
-//               color: ConstantColors.cff141718,
-//               //fontWeight: FontWeight.bold,
-//             ),
-//             recognizer: TapGestureRecognizer()
-//               ..onTap = () {
-//                 Navigator.pushNamed(context, ForgotPasswordView.routeName);
-//               },
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+class _RichTextComponent extends StatelessWidget {
+  const _RichTextComponent({
+    required this.value,
+    required this.actionText,
+    required this.onPressed,
+  });
 
-class _RegisterText extends StatelessWidget {
-  const _RegisterText();
+  final String value;
+  final String actionText;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
+    return Text.rich(
       textAlign: TextAlign.center,
-      text: TextSpan(
+      style: TextStyle(
+        color: Color(0xFF6C6C6C),
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+      ),
+      TextSpan(
+        text: value,
         children: [
-          const TextSpan(
-            text: '¿No tienes cuenta?',
-            style: TextStyle(
-              color: Color(0xFF6C6C6C),
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
           const TextSpan(text: ' '),
           TextSpan(
-            text: 'Regístrate',
+            recognizer: TapGestureRecognizer()..onTap = onPressed,
+            text: actionText,
             style: const TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
               color: ConstantColors.cff141718,
-              //fontWeight: FontWeight.bold,
             ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                Navigator.pushNamed(context, RegisterView.routeName);
-              },
           ),
         ],
       ),

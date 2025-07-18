@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:unetpedia/core/constants/constants_images.dart';
-import 'package:unetpedia/models/generic/generic_enums.dart';
-import 'package:unetpedia/ui/cubit/cubit.dart';
 import 'package:unetpedia/ui/home/home.dart';
-import 'package:unetpedia/ui/qualifications/qualifications_view.dart';
-import 'package:unetpedia/ui/qualifications/tutors_view.dart';
+import 'package:unetpedia/ui/cubit/cubit.dart';
 import 'package:unetpedia/widgets/widgets.dart';
-import 'package:unetpedia/ui/departments/departments.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:unetpedia/models/generic/generic_enums.dart';
+import 'package:unetpedia/core/constants/constants_images.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -23,7 +20,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     _cubit = context.read<GeneralCubit>();
-    //_cubit.getUser();
+    _cubit.getUser();
     super.initState();
   }
 
@@ -72,11 +69,11 @@ class _HomeViewState extends State<HomeView> {
                               "Encuentra el contenido de cada materia.",
                           asset: ConstantImages.greenCard,
                           onPressed: () {
-                            _cubit.setCategoryQuery("");
-                            Navigator.pushNamed(
-                              context,
-                              DepartmentsView.routeName,
-                            );
+                            // _cubit.setCategoryQuery("");
+                            // Navigator.pushNamed(
+                            //   context,
+                            //   DepartmentsView.routeName,
+                            // );
                           },
                         ),
                         const SizedBox(height: 20),
@@ -86,7 +83,7 @@ class _HomeViewState extends State<HomeView> {
                               "Encuentra tutor para ayuda en cada materia.",
                           asset: ConstantImages.yellowCard,
                           onPressed: () {
-                            Navigator.pushNamed(context, TutorsView.routeName);
+                            // Navigator.pushNamed(context, TutorsView.routeName);
                           },
                         ),
                         const SizedBox(height: 20),
@@ -96,10 +93,10 @@ class _HomeViewState extends State<HomeView> {
                               "Calcula lo que te falta para cada parcial.",
                           asset: ConstantImages.blueCard,
                           onPressed: () {
-                            Navigator.pushNamed(
-                              context,
-                              QualificationView.routeName,
-                            );
+                            // Navigator.pushNamed(
+                            //   context,
+                            //   QualificationView.routeName,
+                            // );
                           },
                         ),
                       ],

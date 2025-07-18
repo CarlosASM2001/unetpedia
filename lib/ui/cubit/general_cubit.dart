@@ -1,8 +1,10 @@
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/models/generic/generic.dart';
 import 'package:unetpedia/models/subject/subject.dart';
 import 'package:unetpedia/providers/firestore_provider.dart';
+import 'package:unetpedia/providers/authentication_provider.dart';
 
 part 'general_state.dart';
 
@@ -10,6 +12,7 @@ class GeneralCubit extends Cubit<GeneralState> {
   GeneralCubit() : super(const GeneralState());
 
   final _firestoreProvider = FirestoreProvider();
+  final _authenticationProvider = AuthenticationProvider();
 
   void clean() => emit(const GeneralState());
 
@@ -76,11 +79,14 @@ class GeneralCubit extends Cubit<GeneralState> {
   // Authentication
   // =======================================================================
 
-  /*Future<void> getUser() async {
+  Future<void> getUser() async {
+    if (state.user != null) return;
     if (state.getUserStatus == WidgetStatus.loading) return;
     emit(state.copyWith(getUserStatus: WidgetStatus.loading));
 
-    final response = await _genericProvider.getUser();
+    final response = await _firestoreProvider.getUser(
+      FirebaseAuth.instance.currentUser!.uid,
+    );
 
     return response.fold(
       (l) {
@@ -95,17 +101,18 @@ class GeneralCubit extends Cubit<GeneralState> {
         emit(
           state.copyWith(
             getUserStatus: WidgetStatus.success,
-            userResponseModel: Wrapped.value(r),
+            user: Wrapped.value(r),
           ),
         );
       },
     );
-  }*/
+  }
 
-  /*Future<void> logOut() async {
+  Future<void> logOut() async {
     if (state.logOutStatus == WidgetStatus.loading) return;
     emit(state.copyWith(logOutStatus: WidgetStatus.loading));
 
+    await Future.delayed(Duration(seconds: 1));
     final response = await _authenticationProvider.logOut();
 
     return response.fold(
@@ -121,7 +128,7 @@ class GeneralCubit extends Cubit<GeneralState> {
         emit(state.copyWith(logOutStatus: WidgetStatus.success));
       },
     );
-  }*/
+  }
 
   // =======================================================================
   // Categories (Departments)

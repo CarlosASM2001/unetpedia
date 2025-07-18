@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserResponseModel {
   final String? uid;
   final String? name;
@@ -10,8 +12,6 @@ class UserResponseModel {
   final DateTime? registerDate;
   final DateTime? lastSignIn;
 
-  final String? password;
-
   UserResponseModel({
     this.uid,
     this.name,
@@ -23,7 +23,6 @@ class UserResponseModel {
     this.careerId,
     this.registerDate,
     this.lastSignIn,
-    this.password,
   });
 
   String get fullName => "$name $lastName";
@@ -38,8 +37,8 @@ class UserResponseModel {
         role: json['role'],
         description: json['description'],
         careerId: json['careerId'],
-        registerDate: json['registerDate'],
-        lastSignIn: json['lastSignIn'],
+        registerDate: (json['registerDate'] as Timestamp).toDate(),
+        lastSignIn: (json['lastSignIn'] as Timestamp).toDate(),
       );
 
   Map<String, dynamic> toJson() => {

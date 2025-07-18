@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:unetpedia/models/generic/career_model.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
+import 'package:unetpedia/models/generic/user_response_model.dart';
 import 'package:unetpedia/models/generic/data_exception_model.dart';
 import 'package:unetpedia/models/authentication/register_request_model.dart';
 
@@ -46,11 +47,18 @@ class FirestoreProvider {
     // seria eliminado.
   }
 
-  // Update user profile url in user document
+  // Updates users profile url in user document
   Future<void> updateProfileUrl(String uid, String url) async {
     final DocumentReference ref = _db.collection(_userCollection).doc(uid);
 
     await ref.update({"photoUrl": url});
+  }
+
+  // Updates users last login date
+  Future<void> updateLastSignIn(String uid) async {
+    final DocumentReference ref = _db.collection(_userCollection).doc(uid);
+
+    await ref.update({"lastSignIn": DateTime.now()});
   }
 
   /// This function returns the url of an image uploaded
@@ -79,6 +87,22 @@ class FirestoreProvider {
       return url;
     } catch (e) {
       return "Error";
+    }
+  }
+
+  // Get user informacion
+  Future<Either<DataException, UserResponseModel>> getUser(String uid) async {
+    try {
+      final DocumentSnapshot doc = await _db
+          .collection(_userCollection)
+          .doc(uid)
+          .get();
+
+      return Right(
+        UserResponseModel.fromJson(doc.data() as Map<String, dynamic>),
+      );
+    } catch (e) {
+      return Left(DataException(details: e.toString()));
     }
   }
 
