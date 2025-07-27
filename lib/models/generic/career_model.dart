@@ -17,6 +17,24 @@ class CareerModel {
     required this.updatedAt,
   });
 
+  CareerModel copyWith({
+    String? id,
+    String? name,
+    String? description,
+    bool? isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return CareerModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
   // Convertir a Firestore document
   factory CareerModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -63,23 +81,5 @@ class CareerModel {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
-  }
-
-  CareerModel copyWith({
-    String? id,
-    String? name,
-    String? description,
-    bool? isActive,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return CareerModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      isActive: isActive ?? this.isActive,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/utils/validators.dart';
 import 'package:unetpedia/widgets/main_appbar.dart';
-import 'package:unetpedia/ui/cubit/general_cubit.dart';
 import 'package:unetpedia/ui/subjects/cubit/cubit.dart';
 import 'package:unetpedia/models/generic/file_model.dart';
 import 'package:unetpedia/widgets/inputs/form_input.dart';
@@ -20,14 +19,12 @@ class AddSubjectDocumentView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          SubjectsCubit()
-            ..setSubject(context.read<GeneralCubit>().state.subjectSelected),
+      create: (context) => SubjectsCubit(),
+      //..setSubject(context.read<GeneralCubit>().state.subjectSelected),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: MainAppBar(
-          title:
-              context.read<GeneralCubit>().state.subjectSelected?.name ?? "N/A",
+          title: "context.read<GeneralCubit>().state.subjectSelected?.name",
           isWhite: true,
         ),
         body: BlocConsumer<SubjectsCubit, SubjectsState>(
@@ -175,7 +172,7 @@ class __ViewState extends State<_View> {
                       // final genericCubit = context.read<GeneralCubit>();
 
                       // cubit.createDocument(
-                      //   category: genericCubit.state.categorySelected!.id!,
+                      //   category: genericCubit.state.departmentSelected!.id!,
                       // );
                     }
                   },

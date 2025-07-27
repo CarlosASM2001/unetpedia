@@ -38,7 +38,7 @@ class SettingsView extends StatelessWidget {
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => GenericStatusDialog(
-                  description: state.errorText,
+                  description: state.exception?.details,
                   isErrorDialog: true,
                 ),
               );
@@ -133,6 +133,14 @@ class _UserInfoComponent extends StatelessWidget {
                           fontSize: 18,
                           color: ConstantColors.cff141718,
                           fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        state.userCareer?.name ?? "...",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: ConstantColors.cff141718,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],

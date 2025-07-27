@@ -3,10 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/ui/cubit/cubit.dart';
 import 'package:unetpedia/utils/debouncer.dart';
 import 'package:unetpedia/widgets/widgets.dart';
-import 'package:unetpedia/ui/subjects/views/views.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
-import 'package:unetpedia/core/constants/constants_images.dart';
-import 'package:unetpedia/models/subject/subjects_response_model.dart';
 
 class SubjectsView extends StatefulWidget {
   const SubjectsView({super.key});
@@ -43,12 +40,12 @@ class _SubjectsViewState extends State<SubjectsView> {
                   case WidgetStatus.loading:
                     return const Center(child: LoadingIndicator());
                   case WidgetStatus.error:
-                    return const Center(child: GenericErrorComponent());
+                    return const Center(child: GenericError());
                   case WidgetStatus.success:
                     return Column(
                       children: [
                         GenericTitle(
-                          title: state.categorySelected?.name ?? "N/A",
+                          title: state.departmentSelected?.name ?? "N/A",
                         ),
                         const SizedBox(height: 16),
                         const _Content(),
@@ -102,32 +99,33 @@ class __ContentState extends State<_Content> {
   Widget build(BuildContext context) {
     return BlocBuilder<GeneralCubit, GeneralState>(
       buildWhen: (p, c) =>
-          (p.subjectsResponseModel != c.subjectsResponseModel ||
-          p.moreSubjectsStatus != c.moreSubjectsStatus),
+          ( /*p.subjectsResponseModel != c.subjectsResponseModel ||*/ p
+              .moreSubjectsStatus !=
+          c.moreSubjectsStatus),
       builder: (context, state) {
         List<Widget> children = [];
 
-        for (SubjectResponseModel? subject
-            in state.subjectsResponseModel!.data!) {
-          children.add(
-            GenericCard(
-              title: subject?.name ?? "N/A",
-              subtitle: subject?.countSubject?.countText ?? "N/A",
-              asset: ConstantImages.redCard,
-              onPressed: () {
-                cubit.selectSubject(subject);
-                Navigator.pushNamed(context, SubjectDetailView.routeName);
-              },
-            ),
-          );
-        }
+        // for (SubjectResponseModel? subject
+        //     in state.subjectsResponseModel!.data!) {
+        //   children.add(
+        //     GenericCard(
+        //       title: subject?.name ?? "N/A",
+        //       subtitle: subject?.countSubject?.countText ?? "N/A",
+        //       asset: ConstantImages.redCard,
+        //       onPressed: () {
+        //         cubit.selectSubject(subject);
+        //         Navigator.pushNamed(context, SubjectDetailView.routeName);
+        //       },
+        //     ),
+        //   );
+        // }
 
         if (state.moreSubjectsStatus == WidgetStatus.loading) {
           children.add(const Center(child: LoadingIndicator()));
         }
 
         if (state.moreSubjectsStatus == WidgetStatus.error) {
-          children.add(const GenericErrorComponent());
+          children.add(const GenericError());
         }
 
         return Expanded(
@@ -161,7 +159,7 @@ class _Header extends StatelessWidget {
         prefixIcon: Icons.search_rounded,
         onChange: (value) {
           _debouncer.run(() {
-            context.read<GeneralCubit>().setSubjectQuery(value);
+            //context.read<GeneralCubit>().setSubjectQuery(value);
             //context.read<GeneralCubit>().getSubjects();
           });
         },

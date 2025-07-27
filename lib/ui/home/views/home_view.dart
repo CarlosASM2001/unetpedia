@@ -5,6 +5,7 @@ import 'package:unetpedia/widgets/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
 import 'package:unetpedia/core/constants/constants_images.dart';
+import 'package:unetpedia/ui/departments/views/departaments_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -58,7 +59,7 @@ class _HomeViewState extends State<HomeView> {
                   case WidgetStatus.loading:
                     return const Center(child: LoadingIndicator());
                   case WidgetStatus.error:
-                    return const Center(child: GenericErrorComponent());
+                    return const Center(child: GenericError());
                   default:
                     return ListView(
                       padding: const EdgeInsets.symmetric(vertical: 28),
@@ -69,11 +70,11 @@ class _HomeViewState extends State<HomeView> {
                               "Encuentra el contenido de cada materia.",
                           asset: ConstantImages.greenCard,
                           onPressed: () {
-                            // _cubit.setCategoryQuery("");
-                            // Navigator.pushNamed(
-                            //   context,
-                            //   DepartmentsView.routeName,
-                            // );
+                            _cubit.setDepartmentQuery("");
+                            Navigator.pushNamed(
+                              context,
+                              DepartmentsView.routeName,
+                            );
                           },
                         ),
                         const SizedBox(height: 20),
@@ -121,21 +122,21 @@ class _Header extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // BlocBuilder<GeneralCubit, GeneralState>(
-          //   buildWhen: (p, c) => (p.userResponseModel != c.userResponseModel),
-          //   builder: (context, state) {
-          //     return Text(
-          //       ((state.userResponseModel?.user?.name ?? "").isNotEmpty)
-          //           ? "Hola ${state.userResponseModel?.user?.name}."
-          //           : "Hola ...",
-          //       style: const TextStyle(
-          //         fontSize: 18,
-          //         color: Colors.white,
-          //         fontWeight: FontWeight.w500,
-          //       ),
-          //     );
-          //   },
-          // ),
+          BlocBuilder<GeneralCubit, GeneralState>(
+            buildWhen: (p, c) => (p.user != c.user),
+            builder: (context, state) {
+              return Text(
+                ((state.user?.name ?? "").isNotEmpty)
+                    ? "Hola ${state.user?.name}."
+                    : "Hola ...",
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 2),
           const Text(
             "Encuentra el contenido que quieres aprender.",

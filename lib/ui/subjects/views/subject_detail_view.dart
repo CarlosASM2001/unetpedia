@@ -3,10 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/utils/debouncer.dart';
 import 'package:unetpedia/widgets/widgets.dart';
 import 'package:unetpedia/ui/subjects/subjects.dart';
-import 'package:unetpedia/ui/cubit/general_cubit.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
-import 'package:unetpedia/core/constants/constants_images.dart';
-import 'package:unetpedia/models/documents/documents_response_model.dart';
 
 class SubjectDetailView extends StatelessWidget {
   const SubjectDetailView({super.key});
@@ -15,9 +12,8 @@ class SubjectDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          SubjectsCubit()
-            ..setSubject(context.read<GeneralCubit>().state.subjectSelected),
+      create: (context) => SubjectsCubit(),
+      //..setSubject(context.read<GeneralCubit>().state.subjectSelected),
       child: Scaffold(
         appBar: const MainAppBar(title: "Detalles"),
         floatingActionButton: GenericIconButton(
@@ -64,11 +60,11 @@ class __ViewState extends State<_View> {
                 case WidgetStatus.loading:
                   return const Center(child: LoadingIndicator());
                 case WidgetStatus.error:
-                  return const Center(child: GenericErrorComponent());
+                  return const Center(child: GenericError());
                 case WidgetStatus.success:
                   return Column(
                     children: [
-                      GenericTitle(title: state.subjectSelected?.name ?? "N/A"),
+                      //GenericTitle(title: state.subjectSelected?.name ?? "N/A"),
                       const SizedBox(height: 16),
                       const _RenderContent(),
                     ],
@@ -120,32 +116,32 @@ class __RenderContentState extends State<_RenderContent> {
   Widget build(BuildContext context) {
     return BlocBuilder<SubjectsCubit, SubjectsState>(
       buildWhen: (p, c) =>
-          (p.documents != c.documents ||
-          p.getMoreDocsStatus != c.getMoreDocsStatus),
+          ( /*p.documents != c.documents ||*/ p.getMoreDocsStatus !=
+          c.getMoreDocsStatus),
       builder: (context, state) {
         List<Widget> children = [];
 
-        for (DocumentResponseModel? document in state.documents!.data!) {
-          children.add(
-            SubjectCard(
-              title: document?.name ?? "N/A",
-              asset: ConstantImages.yellowCard,
-              onPressed: () {
-                Navigator.pushNamed(context, SubjectDocumentView.routeName);
-              },
-              onWatch: () {
-                Navigator.pushNamed(context, SubjectDocumentView.routeName);
-              },
-            ),
-          );
-        }
+        // for (DocumentResponseModel? document in state.documents!.data!) {
+        //   children.add(
+        //     SubjectCard(
+        //       title: document?.name ?? "N/A",
+        //       asset: ConstantImages.yellowCard,
+        //       onPressed: () {
+        //         Navigator.pushNamed(context, SubjectDocumentView.routeName);
+        //       },
+        //       onWatch: () {
+        //         Navigator.pushNamed(context, SubjectDocumentView.routeName);
+        //       },
+        //     ),
+        //   );
+        // }
 
         if (state.getMoreDocsStatus == WidgetStatus.loading) {
           children.add(const Center(child: LoadingIndicator()));
         }
 
         if (state.getMoreDocsStatus == WidgetStatus.error) {
-          children.add(const GenericErrorComponent());
+          children.add(const GenericError());
         }
 
         return Expanded(
@@ -179,7 +175,7 @@ class _Header extends StatelessWidget {
         prefixIcon: Icons.search_rounded,
         onChange: (value) {
           _debouncer.run(() {
-            context.read<SubjectsCubit>().setDocumentsQuery(value);
+            //context.read<SubjectsCubit>().setDocumentsQuery(value);
             //context.read<SubjectsCubit>().getDocuments();
           });
         },

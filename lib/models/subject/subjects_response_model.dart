@@ -1,4 +1,4 @@
-import 'package:unetpedia/models/generic/pages_model.dart';
+/*import 'package:unetpedia/models/generic/pages_model.dart';
 import 'package:unetpedia/models/subject/categories_response_model.dart';
 
 class SubjectsResponseModel {
@@ -81,4 +81,4 @@ class CountSubject {
       return "Sin Documentos";
     }
   }
-}
+}*/

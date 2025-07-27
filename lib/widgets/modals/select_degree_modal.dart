@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/models/generic/generic.dart';
 import 'package:unetpedia/ui/cubit/general_cubit.dart';
 import 'package:unetpedia/widgets/loading_indicator.dart';
-import 'package:unetpedia/widgets/generic_error_component.dart';
+import 'package:unetpedia/widgets/generic_error.dart';
 
 class SelectDegreeModal extends StatefulWidget {
   const SelectDegreeModal({super.key, required this.onSelected});
@@ -58,9 +58,7 @@ class _SelectDegreeModalState extends State<SelectDegreeModal> {
             builder: (context, state) {
               switch (state.careersStatus) {
                 case WidgetStatus.error:
-                  return const Expanded(
-                    child: Center(child: GenericErrorComponent()),
-                  );
+                  return const Expanded(child: Center(child: GenericError()));
 
                 case WidgetStatus.loading:
                   return const Expanded(

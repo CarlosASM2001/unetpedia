@@ -5,7 +5,6 @@ import 'package:unetpedia/utils/debouncer.dart';
 import 'package:unetpedia/widgets/widgets.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
 import 'package:unetpedia/core/constants/constants_images.dart';
-import 'package:unetpedia/ui/subjects/views/subjects_view.dart';
 
 class DepartmentsView extends StatelessWidget {
   const DepartmentsView({super.key});
@@ -41,9 +40,9 @@ class _ContentState extends State<_Content> {
   void initState() {
     cubit = context.read<GeneralCubit>();
 
-    // if ((cubit.state.categoriesResponseModel?.data ?? []).isEmpty) {
-    //   cubit.getCategories();
-    // }
+    if ((cubit.state.departments ?? []).isEmpty) {
+      cubit.getDepartments();
+    }
 
     super.initState();
   }
@@ -51,42 +50,67 @@ class _ContentState extends State<_Content> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GeneralCubit, GeneralState>(
-      buildWhen: (p, c) => (p.categoryStatus != c.categoryStatus),
+      buildWhen: (p, c) => (p.departmentsStatus != c.departmentsStatus),
       builder: (context, state) {
-        switch (state.categoryStatus) {
+        switch (state.departmentsStatus) {
           case WidgetStatus.loading:
             return const Center(child: LoadingIndicator());
           case WidgetStatus.error:
-            return const Center(child: GenericErrorComponent());
+            return Center(child: GenericError(error: state.exception?.details));
           case WidgetStatus.success:
             return Column(
               children: [
                 const GenericTitle(title: "Departamento"),
                 const SizedBox(height: 16),
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: state.categoriesResponseModel?.data?.length ?? 0,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
-                    ),
-                    itemBuilder: (context, index) {
-                      final department =
-                          state.categoriesResponseModel?.data?[index];
-                      return GenericCard(
-                        title: department?.name ?? "N/A",
-                        subtitle:
-                            "${department?.count?.subject.toString()} Materias",
-                        asset: ConstantImages.blueCard,
-                        onPressed: () {
-                          cubit.selectCategory(department);
-                          Navigator.pushNamed(context, SubjectsView.routeName);
-                        },
+                BlocBuilder<GeneralCubit, GeneralState>(
+                  buildWhen: (p, c) =>
+                      (p.departmentsFiltered != c.departmentsFiltered),
+                  builder: (context, state) {
+                    // Bandera para renderizar el listado filtrado
+                    final bool applyFilter =
+                        (state.departmentsFiltered != null);
+
+                    if ((applyFilter)
+                        ? ((state.departmentsFiltered ?? []).isEmpty)
+                        : ((state.departments ?? []).isEmpty)) {
+                      return Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          "No hemos encontrado resultados para tu búsqueda.",
+                          textAlign: TextAlign.center,
+                        ),
                       );
-                    },
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 16),
-                  ),
+                    }
+
+                    return Expanded(
+                      child: ListView.separated(
+                        itemCount: (applyFilter)
+                            ? (state.departmentsFiltered?.length ?? 0)
+                            : (state.departments?.length ?? 0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        itemBuilder: (context, index) {
+                          final department = (applyFilter)
+                              ? (state.departmentsFiltered?[index])
+                              : (state.departments?[index]);
+
+                          return GenericCard(
+                            title: department?.name ?? "N/A",
+                            subtitle: "0 Materias",
+                            asset: ConstantImages.blueCard,
+                            onPressed: () {
+                              // cubit.selectCategory(department);
+                              // Navigator.pushNamed(context, SubjectsView.routeName);
+                            },
+                          );
+                        },
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 16),
+                      ),
+                    );
+                  },
                 ),
               ],
             );
@@ -108,13 +132,13 @@ class _Header extends StatelessWidget {
     return AppBarLayout(
       child: SearchInput(
         controller: TextEditingController(
-          text: context.read<GeneralCubit>().state.categoryQuery,
+          text: context.read<GeneralCubit>().state.departmentsQuery,
         ),
         hintText: "Buscar Departamento",
         prefixIcon: Icons.search_rounded,
         onChange: (value) {
           _debouncer.run(() {
-            context.read<GeneralCubit>().setCategoryQuery(value);
+            context.read<GeneralCubit>().setDepartmentQuery(value);
             // context.read<GeneralCubit>().getCategories();
           });
         },

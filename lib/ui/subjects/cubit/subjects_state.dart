@@ -5,8 +5,8 @@ class SubjectsState extends Equatable {
     this.errorText = "",
     this.getDocumentsStatus = WidgetStatus.initial,
     this.getMoreDocsStatus = WidgetStatus.initial,
-    this.documents,
-    this.subjectSelected,
+    //this.documents,
+    //this.subjectSelected,
     this.documentsQuery = "",
     this.uploadStatus = WidgetStatus.initial,
     this.fileSelected,
@@ -15,11 +15,11 @@ class SubjectsState extends Equatable {
 
   // General
   final String errorText;
-  final SubjectResponseModel? subjectSelected;
+  //final SubjectResponseModel? subjectSelected;
 
   // Get Documents
   final String documentsQuery;
-  final DocumentsResponseModel? documents;
+  //final DocumentsResponseModel? documents;
   final DocumentDetail? documentDetail;
   final WidgetStatus getDocumentsStatus;
   final WidgetStatus getMoreDocsStatus;
@@ -30,23 +30,23 @@ class SubjectsState extends Equatable {
 
   @override
   List<Object?> get props => [
-        errorText,
-        getDocumentsStatus,
-        getMoreDocsStatus,
-        documents,
-        subjectSelected,
-        documentsQuery,
-        uploadStatus,
-        fileSelected,
-        documentDetail,
-      ];
+    errorText,
+    getDocumentsStatus,
+    getMoreDocsStatus,
+    //documents,
+    //subjectSelected,
+    documentsQuery,
+    uploadStatus,
+    fileSelected,
+    documentDetail,
+  ];
 
   SubjectsState copyWith({
     String? errorText,
     WidgetStatus? getDocumentsStatus,
     WidgetStatus? getMoreDocsStatus,
-    Wrapped<DocumentsResponseModel?>? documents,
-    Wrapped<SubjectResponseModel?>? subjectSelected,
+    //Wrapped<DocumentsResponseModel?>? documents,
+    //Wrapped<SubjectResponseModel?>? subjectSelected,
     String? documentsQuery,
     WidgetStatus? uploadStatus,
     Wrapped<FileModel?>? fileSelected,
@@ -56,16 +56,18 @@ class SubjectsState extends Equatable {
       errorText: errorText ?? this.errorText,
       getDocumentsStatus: getDocumentsStatus ?? this.getDocumentsStatus,
       getMoreDocsStatus: getMoreDocsStatus ?? this.getMoreDocsStatus,
-      documents: documents != null ? documents.value : this.documents,
-      subjectSelected: subjectSelected != null
-          ? subjectSelected.value
-          : this.subjectSelected,
+      //documents: documents != null ? documents.value : this.documents,
+      //subjectSelected: subjectSelected != null
+      //    ? subjectSelected.value
+      //    : this.subjectSelected,
       documentsQuery: documentsQuery ?? this.documentsQuery,
       uploadStatus: uploadStatus ?? this.uploadStatus,
-      fileSelected:
-          fileSelected != null ? fileSelected.value : this.fileSelected,
-      documentDetail:
-          documentDetail != null ? documentDetail.value : this.documentDetail,
+      fileSelected: fileSelected != null
+          ? fileSelected.value
+          : this.fileSelected,
+      documentDetail: documentDetail != null
+          ? documentDetail.value
+          : this.documentDetail,
     );
   }
 }

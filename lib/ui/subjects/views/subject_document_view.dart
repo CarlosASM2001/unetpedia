@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
-import 'package:unetpedia/widgets/generic_error_component.dart';
+import 'package:unetpedia/widgets/generic_error.dart';
 import 'package:unetpedia/widgets/loading_indicator.dart';
 import 'package:unetpedia/widgets/main_appbar.dart';
 import 'package:unetpedia/ui/subjects/cubit/cubit.dart';
@@ -54,7 +54,7 @@ class __ViewState extends State<_View> {
           case WidgetStatus.loading:
             return const Center(child: LoadingIndicator());
           case WidgetStatus.error:
-            return const Center(child: GenericErrorComponent());
+            return const Center(child: GenericError());
           default:
             return PDFView(filePath: state.fileSelected!.file.path);
         }

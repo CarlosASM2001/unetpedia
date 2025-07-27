@@ -1,4 +1,4 @@
-import 'package:unetpedia/models/generic/pages_model.dart';
+/*import 'package:unetpedia/models/generic/pages_model.dart';
 
 class DocumentsResponseModel {
   final List<DocumentResponseModel>? data;
@@ -54,4 +54,4 @@ class DocumentResponseModel {
         name: json["name"],
         subjectId: json["subject_id"],
       );
-}
+}*/

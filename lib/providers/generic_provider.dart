@@ -22,7 +22,7 @@ class GenericProvider {
   // }
 
   // Get Categories List
-  // Future<Either<DataException, CategoriesResponseModel>> getCategories(
+  // Future<Either<DataException, departments>> getCategories(
   //     {String? query}) async {
   //   final params = {"name": query};
   //   try {
@@ -30,7 +30,7 @@ class GenericProvider {
   //         .dio
   //         .get(EndPointConstant.getCategories, queryParameters: params);
   //
-  //     return Right(CategoriesResponseModel.fromJson(response.data));
+  //     return Right(departments.fromJson(response.data));
   //   } on DioException catch (e) {
   //     return Left(DataException(details: e.response?.data.toString()));
   //   } catch (e) {

@@ -16,34 +16,51 @@ class GeneralCubit extends Cubit<GeneralState> {
 
   void clean() => emit(const GeneralState());
 
-  void setCategoryQuery(String value) {
-    emit(state.copyWith(categoryQuery: value));
+  /// Aplica filtrado por nombre al listado de departamentos
+  void setDepartmentQuery(String value) {
+    emit(state.copyWith(departmentsQuery: value));
+
+    if ((state.departments ?? []).isEmpty) return;
+
+    // Si el valor es vacio, se limpian los filtros
+    if (value.isEmpty) {
+      emit(state.copyWith(departmentsFiltered: Wrapped.value(null)));
+      return;
+    }
+
+    // Encontrando coincidencias en la lista
+    final values = state.departments
+        ?.where((e) => (e.name!.toLowerCase().contains(value.toLowerCase())))
+        .toList();
+
+    // Aplicando el filtro localmente
+    emit(state.copyWith(departmentsFiltered: Wrapped.value(values)));
   }
 
-  void setSubjectQuery(String value) {
-    emit(
-      state.copyWith(
-        subjectQuery: value,
-        subjectsResponseModel: const Wrapped.value(null),
-      ),
-    );
-  }
+  //void setSubjectQuery(String value) {
+  //  emit(
+  //    state.copyWith(
+  //      subjectQuery: value,
+  //      subjectsResponseModel: const Wrapped.value(null),
+  //    ),
+  //  );
+  //}
 
-  void selectCategory(CategoryResponseModel? value) {
-    emit(
-      state.copyWith(
-        categorySelected: Wrapped.value(value),
-        subjectsResponseModel: const Wrapped.value(null),
-        subjectsStatus: WidgetStatus.initial,
-        moreSubjectsStatus: WidgetStatus.initial,
-        subjectQuery: "",
-      ),
-    );
-  }
+  // void selectCategory(CategoryResponseModel? value) {
+  //   emit(
+  //     state.copyWith(
+  //       departmentSelected: Wrapped.value(value),
+  //       //subjectsResponseModel: const Wrapped.value(null),
+  //       subjectsStatus: WidgetStatus.initial,
+  //       moreSubjectsStatus: WidgetStatus.initial,
+  //       subjectQuery: "",
+  //     ),
+  //   );
+  // }
 
-  void selectSubject(SubjectResponseModel? value) {
-    emit(state.copyWith(subjectSelected: Wrapped.value(value)));
-  }
+  //void selectSubject(SubjectResponseModel? value) {
+  //  emit(state.copyWith(subjectSelected: Wrapped.value(value)));
+  //}
 
   // =======================================================================
   // Careers
@@ -57,12 +74,7 @@ class GeneralCubit extends Cubit<GeneralState> {
 
     return resp.fold(
       (l) {
-        emit(
-          state.copyWith(
-            careersStatus: WidgetStatus.error,
-            errorText: l.toString(),
-          ),
-        );
+        emit(state.copyWith(careersStatus: WidgetStatus.error, exception: l));
       },
       (r) async {
         emit(
@@ -90,18 +102,25 @@ class GeneralCubit extends Cubit<GeneralState> {
 
     return response.fold(
       (l) {
-        emit(
-          state.copyWith(
-            getUserStatus: WidgetStatus.error,
-            errorText: l.details,
-          ),
-        );
+        emit(state.copyWith(getUserStatus: WidgetStatus.error, exception: l));
       },
       (r) async {
+        // Verificando si la lista de carreras esta vacia para consumir
+        // la peticion
+        if ((state.careers ?? []).isEmpty) {
+          await getCareers();
+        }
+
+        // Determinando la carrera del usuario para guardarla en el state¿
+        final userCareer = state.careers?.firstWhere(
+          (e) => (e.id == r.careerId),
+        );
+
         emit(
           state.copyWith(
             getUserStatus: WidgetStatus.success,
             user: Wrapped.value(r),
+            userCareer: Wrapped.value(userCareer),
           ),
         );
       },
@@ -117,12 +136,7 @@ class GeneralCubit extends Cubit<GeneralState> {
 
     return response.fold(
       (l) {
-        emit(
-          state.copyWith(
-            logOutStatus: WidgetStatus.error,
-            errorText: l.details,
-          ),
-        );
+        emit(state.copyWith(logOutStatus: WidgetStatus.error, exception: l));
       },
       (r) async {
         emit(state.copyWith(logOutStatus: WidgetStatus.success));
@@ -134,33 +148,28 @@ class GeneralCubit extends Cubit<GeneralState> {
   // Categories (Departments)
   // =======================================================================
 
-  /*Future<void> getCategories() async {
-    if (state.categoryStatus == WidgetStatus.loading) return;
-    emit(state.copyWith(categoryStatus: WidgetStatus.loading));
+  Future<void> getDepartments() async {
+    if (state.departmentsStatus == WidgetStatus.loading) return;
+    emit(state.copyWith(departmentsStatus: WidgetStatus.loading));
 
-    final response = await _genericProvider.getCategories(
-      query: state.categoryQuery,
-    );
+    final response = await _firestoreProvider.getDepartments();
 
     return response.fold(
       (l) {
         emit(
-          state.copyWith(
-            categoryStatus: WidgetStatus.error,
-            errorText: l.details,
-          ),
+          state.copyWith(departmentsStatus: WidgetStatus.error, exception: l),
         );
       },
       (r) async {
         emit(
           state.copyWith(
-            categoryStatus: WidgetStatus.success,
-            categoriesResponseModel: Wrapped.value(r),
+            departmentsStatus: WidgetStatus.success,
+            departments: Wrapped.value(r),
           ),
         );
       },
     );
-  }*/
+  }
 
   // =======================================================================
   // Subjects
@@ -189,7 +198,7 @@ class GeneralCubit extends Cubit<GeneralState> {
 
     final response = await _genericProvider.getSubjects(
       page: page!,
-      categoryId: state.categorySelected!.id!,
+      categoryId: state.departmentSelected!.id!,
       query: state.subjectQuery,
     );
 

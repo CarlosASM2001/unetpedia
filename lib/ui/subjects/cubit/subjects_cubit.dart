@@ -4,7 +4,6 @@ import 'package:unetpedia/models/generic/wrapped.dart';
 import 'package:unetpedia/models/generic/file_model.dart';
 import 'package:unetpedia/models/documents/documents.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
-import 'package:unetpedia/models/subject/subjects_response_model.dart';
 
 part 'subjects_state.dart';
 
@@ -13,18 +12,18 @@ class SubjectsCubit extends Cubit<SubjectsState> {
 
   //final _documentsProvider = DocumentsProvider();
 
-  void setSubject(SubjectResponseModel? value) {
-    emit(state.copyWith(subjectSelected: Wrapped.value(value)));
-  }
+  // void setSubject(SubjectResponseModel? value) {
+  //   emit(state.copyWith(subjectSelected: Wrapped.value(value)));
+  // }
 
-  void setDocumentsQuery(String value) {
-    emit(
-      state.copyWith(
-        documentsQuery: value,
-        documents: const Wrapped.value(null),
-      ),
-    );
-  }
+  // void setDocumentsQuery(String value) {
+  //   emit(
+  //     state.copyWith(
+  //       documentsQuery: value,
+  //       documents: const Wrapped.value(null),
+  //     ),
+  //   );
+  // }
 
   void selectFile(FileModel value) {
     emit(state.copyWith(fileSelected: Wrapped.value(value)));

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:unetpedia/models/generic/career_model.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
+import 'package:unetpedia/models/subject/department_model.dart';
 import 'package:unetpedia/models/generic/user_response_model.dart';
 import 'package:unetpedia/models/generic/data_exception_model.dart';
 import 'package:unetpedia/models/authentication/register_request_model.dart';
@@ -13,7 +14,8 @@ class FirestoreProvider {
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   final String _userCollection = "users";
-  final String _careersCollection = 'careers';
+  final String _careersCollection = "careers";
+  final String _departmentsCollection = "departments";
 
   // ========================================================================
   //  Users
@@ -124,6 +126,30 @@ class FirestoreProvider {
             .map((doc) => CareerModel.fromFirestore(doc))
             .toList(),
       );
+    } catch (e) {
+      return Left(DataException(details: e.toString()));
+    }
+  }
+
+  // ========================================================================
+  //  Departments
+  // ========================================================================
+
+  // Get departments by name
+  Future<Either<DataException, List<DepartmentModel>>> getDepartments() async {
+    try {
+      final QuerySnapshot querySnapshot = await _db
+          .collection(_departmentsCollection)
+          .orderBy('name')
+          .get();
+
+      return Right(
+        querySnapshot.docs
+            .map((doc) => DepartmentModel.fromFirestore(doc))
+            .toList(),
+      );
+    } on FirebaseException catch (e) {
+      return Left(DataException(details: e.message));
     } catch (e) {
       return Left(DataException(details: e.toString()));
     }
