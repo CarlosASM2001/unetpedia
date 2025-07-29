@@ -37,26 +37,40 @@ class GeneralCubit extends Cubit<GeneralState> {
     emit(state.copyWith(departmentsFiltered: Wrapped.value(values)));
   }
 
-  //void setSubjectQuery(String value) {
-  //  emit(
-  //    state.copyWith(
-  //      subjectQuery: value,
-  //      subjectsResponseModel: const Wrapped.value(null),
-  //    ),
-  //  );
-  //}
+  /// Aplica filtrado por nombre al listado de materias
+  void setSubjectQuery(String value) {
+    emit(state.copyWith(subjectQuery: value));
 
-  // void selectCategory(CategoryResponseModel? value) {
-  //   emit(
-  //     state.copyWith(
-  //       departmentSelected: Wrapped.value(value),
-  //       //subjectsResponseModel: const Wrapped.value(null),
-  //       subjectsStatus: WidgetStatus.initial,
-  //       moreSubjectsStatus: WidgetStatus.initial,
-  //       subjectQuery: "",
-  //     ),
-  //   );
-  // }
+    emit(state.copyWith(subjectQuery: value));
+
+    if ((state.subjects ?? []).isEmpty) return;
+
+    // Si el valor es vacio, se limpian los filtros
+    if (value.isEmpty) {
+      emit(state.copyWith(subjectsFiltered: Wrapped.value(null)));
+      return;
+    }
+
+    // Encontrando coincidencias en la lista
+    final values = state.subjects
+        ?.where((e) => (e.name!.toLowerCase().contains(value.toLowerCase())))
+        .toList();
+
+    // Aplicando el filtro localmente
+    emit(state.copyWith(subjectsFiltered: Wrapped.value(values)));
+  }
+
+  /// Guarda en el estado el departamento seleccionado por el usuario
+  void selectDepartment(DepartmentModel? value) {
+    emit(
+      state.copyWith(
+        subjectsStatus: WidgetStatus.initial,
+        departmentSelected: Wrapped.value(value),
+        subjects: const Wrapped.value(null),
+        subjectsFiltered: const Wrapped.value(null),
+      ),
+    );
+  }
 
   //void selectSubject(SubjectResponseModel? value) {
   //  emit(state.copyWith(subjectSelected: Wrapped.value(value)));
@@ -176,68 +190,27 @@ class GeneralCubit extends Cubit<GeneralState> {
   // =======================================================================
 
   // Subjects List with pagination
-  /*Future<void> getSubjects() async {
-    if (state.subjectsStatus == WidgetStatus.loading ||
-        state.moreSubjectsStatus == WidgetStatus.loading) {
-      return;
-    }
+  Future<void> getSubjects() async {
+    if (state.departmentSelected?.id == null) return;
+    if (state.subjectsStatus == WidgetStatus.loading) return;
+    emit(state.copyWith(subjectsStatus: WidgetStatus.loading));
 
-    int? page = 1;
-
-    if (state.subjectsResponseModel != null) {
-      if ((state.subjectsResponseModel?.pages?.next) == null) return;
-
-      page = state.subjectsResponseModel?.pages?.next;
-    }
-
-    if (page != 1) {
-      emit(state.copyWith(moreSubjectsStatus: WidgetStatus.loading));
-    } else {
-      emit(state.copyWith(subjectsStatus: WidgetStatus.loading));
-    }
-
-    final response = await _genericProvider.getSubjects(
-      page: page!,
-      categoryId: state.departmentSelected!.id!,
-      query: state.subjectQuery,
+    final response = await _firestoreProvider.getSubjects(
+      id: state.departmentSelected!.id!,
     );
 
     return response.fold(
       (l) {
-        if (page != 1) {
-          emit(
-            state.copyWith(
-              moreSubjectsStatus: WidgetStatus.error,
-              errorText: l.details,
-            ),
-          );
-        } else {
-          emit(
-            state.copyWith(
-              subjectsStatus: WidgetStatus.error,
-              errorText: l.details,
-            ),
-          );
-        }
+        emit(state.copyWith(subjectsStatus: WidgetStatus.error, exception: l));
       },
       (r) async {
         emit(
           state.copyWith(
             subjectsStatus: WidgetStatus.success,
-            moreSubjectsStatus: WidgetStatus.success,
-            subjectsResponseModel: Wrapped.value(
-              (state.subjectsResponseModel ?? SubjectsResponseModel()).copyWith(
-                data: [
-                  ...(state.subjectsResponseModel?.data ?? []),
-                  ...r.data!,
-                ],
-                pages: r.pages,
-                count: r.count,
-              ),
-            ),
+            subjects: Wrapped.value(r),
           ),
         );
       },
     );
-  }*/
+  }
 }

@@ -1,27 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/ui/cubit/cubit.dart';
 import 'package:unetpedia/utils/debouncer.dart';
 import 'package:unetpedia/widgets/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
+import 'package:unetpedia/core/constants/constants_images.dart';
 
-class SubjectsView extends StatefulWidget {
+class SubjectsView extends StatelessWidget {
   const SubjectsView({super.key});
   static const String routeName = 'subjects_view';
-
-  @override
-  State<SubjectsView> createState() => _SubjectsViewState();
-}
-
-class _SubjectsViewState extends State<SubjectsView> {
-  late GeneralCubit cubit;
-
-  @override
-  void initState() {
-    cubit = context.read<GeneralCubit>();
-    //cubit.getSubjects();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,31 +19,7 @@ class _SubjectsViewState extends State<SubjectsView> {
         children: [
           _Header(),
           const SizedBox(height: 28),
-          Expanded(
-            child: BlocBuilder<GeneralCubit, GeneralState>(
-              buildWhen: (p, c) => (p.subjectsStatus != c.subjectsStatus),
-              builder: (context, state) {
-                switch (state.subjectsStatus) {
-                  case WidgetStatus.loading:
-                    return const Center(child: LoadingIndicator());
-                  case WidgetStatus.error:
-                    return const Center(child: GenericError());
-                  case WidgetStatus.success:
-                    return Column(
-                      children: [
-                        GenericTitle(
-                          title: state.departmentSelected?.name ?? "N/A",
-                        ),
-                        const SizedBox(height: 16),
-                        const _Content(),
-                      ],
-                    );
-                  default:
-                    return const SizedBox.shrink();
-                }
-              },
-            ),
-          ),
+          const Expanded(child: _Content()),
         ],
       ),
     );
@@ -71,73 +34,87 @@ class _Content extends StatefulWidget {
 }
 
 class __ContentState extends State<_Content> {
-  late GeneralCubit cubit;
-  late ScrollController scrollController;
+  late GeneralCubit _cubit;
 
   @override
   void initState() {
-    cubit = context.read<GeneralCubit>();
-    scrollController = ScrollController();
-
-    scrollController.addListener(() {
-      // double position = scrollController.position.pixels;
-      // double maxExtend = scrollController.position.maxScrollExtent;
-      // if (position > maxExtend - 30) {
-      //   cubit.getSubjects();
-      // }
-    });
+    _cubit = context.read<GeneralCubit>();
+    _cubit.getSubjects();
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    scrollController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GeneralCubit, GeneralState>(
-      buildWhen: (p, c) =>
-          ( /*p.subjectsResponseModel != c.subjectsResponseModel ||*/ p
-              .moreSubjectsStatus !=
-          c.moreSubjectsStatus),
+      buildWhen: (p, c) => (p.subjectsStatus != c.subjectsStatus),
       builder: (context, state) {
-        List<Widget> children = [];
+        switch (state.subjectsStatus) {
+          case WidgetStatus.loading:
+            return const Center(child: LoadingIndicator());
+          case WidgetStatus.error:
+            return const Center(child: GenericError());
+          case WidgetStatus.success:
+            return Column(
+              children: [
+                GenericTitle(title: state.departmentSelected?.name ?? "N/A"),
+                const SizedBox(height: 16),
+                BlocBuilder<GeneralCubit, GeneralState>(
+                  buildWhen: (p, c) =>
+                      (p.subjectsFiltered != c.subjectsFiltered),
+                  builder: (context, state) {
+                    // Bandera para renderizar el listado filtrado
+                    final bool applyFilter = (state.subjectsFiltered != null);
 
-        // for (SubjectResponseModel? subject
-        //     in state.subjectsResponseModel!.data!) {
-        //   children.add(
-        //     GenericCard(
-        //       title: subject?.name ?? "N/A",
-        //       subtitle: subject?.countSubject?.countText ?? "N/A",
-        //       asset: ConstantImages.redCard,
-        //       onPressed: () {
-        //         cubit.selectSubject(subject);
-        //         Navigator.pushNamed(context, SubjectDetailView.routeName);
-        //       },
-        //     ),
-        //   );
-        // }
+                    if ((applyFilter)
+                        ? ((state.subjectsFiltered ?? []).isEmpty)
+                        : ((state.subjects ?? []).isEmpty)) {
+                      return Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          "No hemos encontrado resultados para tu búsqueda.",
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }
 
-        if (state.moreSubjectsStatus == WidgetStatus.loading) {
-          children.add(const Center(child: LoadingIndicator()));
+                    return Expanded(
+                      child: ListView.separated(
+                        itemCount: (applyFilter)
+                            ? (state.subjectsFiltered?.length ?? 0)
+                            : (state.subjects?.length ?? 0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        itemBuilder: (context, index) {
+                          final subjects = (applyFilter)
+                              ? (state.subjectsFiltered?[index])
+                              : (state.subjects?[index]);
+
+                          return GenericCard(
+                            title: subjects?.name ?? "N/A",
+                            subtitle: "0 Archivos",
+                            asset: ConstantImages.redCard,
+                            onPressed: () {
+                              FocusScope.of(context).unfocus();
+                              FocusManager.instance.primaryFocus?.unfocus();
+
+                              // cubit.selectSubject(subject);
+                              // Navigator.pushNamed(context, SubjectDetailView.routeName);
+                            },
+                          );
+                        },
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 16),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          default:
+            return const Placeholder();
         }
-
-        if (state.moreSubjectsStatus == WidgetStatus.error) {
-          children.add(const GenericError());
-        }
-
-        return Expanded(
-          child: ListView.separated(
-            shrinkWrap: true,
-            controller: scrollController,
-            itemCount: children.length,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            itemBuilder: (context, index) => children[index],
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
-          ),
-        );
       },
     );
   }
@@ -155,12 +132,11 @@ class _Header extends StatelessWidget {
         controller: TextEditingController(
           text: context.read<GeneralCubit>().state.subjectQuery,
         ),
-        hintText: "Buscar Materia",
+        hintText: "Buscar materia",
         prefixIcon: Icons.search_rounded,
         onChange: (value) {
           _debouncer.run(() {
-            //context.read<GeneralCubit>().setSubjectQuery(value);
-            //context.read<GeneralCubit>().getSubjects();
+            context.read<GeneralCubit>().setSubjectQuery(value);
           });
         },
       ),

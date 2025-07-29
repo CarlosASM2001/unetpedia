@@ -10,15 +10,15 @@ class GeneralState extends Equatable {
     this.departmentsStatus = WidgetStatus.initial,
     this.departments,
     this.subjectsStatus = WidgetStatus.initial,
-    //this.subjectsResponseModel,
+    this.subjects,
     this.departmentSelected,
-    this.moreSubjectsStatus = WidgetStatus.initial,
     //this.subjectSelected,
     this.departmentsQuery = "",
     this.subjectQuery = "",
     this.user,
     this.userCareer,
     this.departmentsFiltered,
+    this.subjectsFiltered,
   });
 
   // General
@@ -44,9 +44,9 @@ class GeneralState extends Equatable {
   // Subjects
   final String subjectQuery;
   final WidgetStatus subjectsStatus;
-  final WidgetStatus moreSubjectsStatus;
+  final List<SubjectModel>? subjects;
+  final List<SubjectModel>? subjectsFiltered;
   //final SubjectResponseModel? subjectSelected;
-  //final SubjectsResponseModel? subjectsResponseModel;
 
   @override
   List<Object?> get props => [
@@ -58,15 +58,15 @@ class GeneralState extends Equatable {
     departmentsStatus,
     departments,
     subjectsStatus,
-    //subjectsResponseModel,
+    subjects,
     departmentSelected,
-    moreSubjectsStatus,
     //subjectSelected,
     departmentsQuery,
     subjectQuery,
     user,
     userCareer,
     departmentsFiltered,
+    subjectsFiltered,
   ];
 
   GeneralState copyWith({
@@ -78,15 +78,15 @@ class GeneralState extends Equatable {
     WidgetStatus? departmentsStatus,
     Wrapped<List<DepartmentModel>?>? departments,
     WidgetStatus? subjectsStatus,
-    //Wrapped<SubjectsResponseModel?>? subjectsResponseModel,
+    Wrapped<List<SubjectModel>?>? subjects,
     Wrapped<DepartmentModel?>? departmentSelected,
-    WidgetStatus? moreSubjectsStatus,
     //Wrapped<SubjectResponseModel?>? subjectSelected,
     String? departmentsQuery,
     String? subjectQuery,
     Wrapped<UserResponseModel?>? user,
     Wrapped<CareerModel?>? userCareer,
     Wrapped<List<DepartmentModel>?>? departmentsFiltered,
+    Wrapped<List<SubjectModel>?>? subjectsFiltered,
   }) {
     return GeneralState(
       exception: exception ?? this.exception,
@@ -97,13 +97,10 @@ class GeneralState extends Equatable {
       departmentsStatus: departmentsStatus ?? this.departmentsStatus,
       departments: departments != null ? departments.value : this.departments,
       subjectsStatus: subjectsStatus ?? this.subjectsStatus,
-      //subjectsResponseModel: subjectsResponseModel != null
-      //    ? subjectsResponseModel.value
-      //    : this.subjectsResponseModel,
+      subjects: subjects != null ? subjects.value : this.subjects,
       departmentSelected: departmentSelected != null
           ? departmentSelected.value
           : this.departmentSelected,
-      moreSubjectsStatus: moreSubjectsStatus ?? this.moreSubjectsStatus,
       //subjectSelected: subjectSelected != null
       //    ? subjectSelected.value
       //    : this.subjectSelected,
@@ -114,6 +111,9 @@ class GeneralState extends Equatable {
       departmentsFiltered: departmentsFiltered != null
           ? departmentsFiltered.value
           : this.departmentsFiltered,
+      subjectsFiltered: subjectsFiltered != null
+          ? subjectsFiltered.value
+          : this.subjectsFiltered,
     );
   }
 }

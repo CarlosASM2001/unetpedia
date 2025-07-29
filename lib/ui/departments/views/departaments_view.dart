@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/ui/cubit/cubit.dart';
 import 'package:unetpedia/utils/debouncer.dart';
 import 'package:unetpedia/widgets/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
 import 'package:unetpedia/core/constants/constants_images.dart';
+import 'package:unetpedia/ui/subjects/views/subjects_view.dart';
 
 class DepartmentsView extends StatelessWidget {
   const DepartmentsView({super.key});
@@ -34,14 +35,14 @@ class _Content extends StatefulWidget {
 }
 
 class _ContentState extends State<_Content> {
-  late GeneralCubit cubit;
+  late GeneralCubit _cubit;
 
   @override
   void initState() {
-    cubit = context.read<GeneralCubit>();
+    _cubit = context.read<GeneralCubit>();
 
-    if ((cubit.state.departments ?? []).isEmpty) {
-      cubit.getDepartments();
+    if ((_cubit.state.departments ?? []).isEmpty) {
+      _cubit.getDepartments();
     }
 
     super.initState();
@@ -101,8 +102,15 @@ class _ContentState extends State<_Content> {
                             subtitle: "0 Materias",
                             asset: ConstantImages.blueCard,
                             onPressed: () {
-                              // cubit.selectCategory(department);
-                              // Navigator.pushNamed(context, SubjectsView.routeName);
+                              FocusScope.of(context).unfocus();
+                              FocusManager.instance.primaryFocus?.unfocus();
+
+                              _cubit.setSubjectQuery("");
+                              _cubit.selectDepartment(department);
+                              Navigator.pushNamed(
+                                context,
+                                SubjectsView.routeName,
+                              );
                             },
                           );
                         },
@@ -115,7 +123,7 @@ class _ContentState extends State<_Content> {
               ],
             );
           default:
-            return const SizedBox.shrink();
+            return const Placeholder();
         }
       },
     );
@@ -134,12 +142,11 @@ class _Header extends StatelessWidget {
         controller: TextEditingController(
           text: context.read<GeneralCubit>().state.departmentsQuery,
         ),
-        hintText: "Buscar Departamento",
+        hintText: "Buscar departamento",
         prefixIcon: Icons.search_rounded,
         onChange: (value) {
           _debouncer.run(() {
             context.read<GeneralCubit>().setDepartmentQuery(value);
-            // context.read<GeneralCubit>().getCategories();
           });
         },
       ),

@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:unetpedia/models/subject/subject.dart';
 import 'package:unetpedia/models/generic/career_model.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
-import 'package:unetpedia/models/subject/department_model.dart';
 import 'package:unetpedia/models/generic/user_response_model.dart';
 import 'package:unetpedia/models/generic/data_exception_model.dart';
 import 'package:unetpedia/models/authentication/register_request_model.dart';
@@ -16,6 +16,7 @@ class FirestoreProvider {
   final String _userCollection = "users";
   final String _careersCollection = "careers";
   final String _departmentsCollection = "departments";
+  final String _subjectsCollection = "subjects";
 
   // ========================================================================
   //  Users
@@ -146,6 +147,34 @@ class FirestoreProvider {
       return Right(
         querySnapshot.docs
             .map((doc) => DepartmentModel.fromFirestore(doc))
+            .toList(),
+      );
+    } on FirebaseException catch (e) {
+      return Left(DataException(details: e.message));
+    } catch (e) {
+      return Left(DataException(details: e.toString()));
+    }
+  }
+
+  // ========================================================================
+  //  Subjects
+  // ========================================================================
+
+  // Get subjects by name
+  Future<Either<DataException, List<SubjectModel>>> getSubjects({
+    required String id,
+  }) async {
+    try {
+      final QuerySnapshot querySnapshot = await _db
+          .collection(_departmentsCollection)
+          .doc(id)
+          .collection(_subjectsCollection)
+          .orderBy("name")
+          .get();
+
+      return Right(
+        querySnapshot.docs
+            .map((doc) => SubjectModel.fromFirestore(doc))
             .toList(),
       );
     } on FirebaseException catch (e) {

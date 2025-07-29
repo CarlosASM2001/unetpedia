@@ -19,7 +19,7 @@ class GenericCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      //borderRadius: BorderRadius.circular(24),
+      color: Colors.transparent,
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(24),
@@ -28,14 +28,6 @@ class GenericCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
-            //boxShadow: const [
-            //  BoxShadow(
-            //    color: Color(0x33201B39),
-            //    offset: Offset(0, 4),
-            //    blurRadius: 20.0,
-            //    spreadRadius: 0.0,
-            //  ),
-            //]
           ),
           child: Row(
             children: [
@@ -92,7 +84,7 @@ class GenericCard extends StatelessWidget {
                   ),
                   SizedBox(width: 12),
                 ],
-              )
+              ),
             ],
           ),
         ),
