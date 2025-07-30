@@ -115,9 +115,6 @@ class __RenderContentState extends State<_RenderContent> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SubjectsCubit, SubjectsState>(
-      buildWhen: (p, c) =>
-          ( /*p.documents != c.documents ||*/ p.getMoreDocsStatus !=
-          c.getMoreDocsStatus),
       builder: (context, state) {
         List<Widget> children = [];
 
@@ -135,14 +132,6 @@ class __RenderContentState extends State<_RenderContent> {
         //     ),
         //   );
         // }
-
-        if (state.getMoreDocsStatus == WidgetStatus.loading) {
-          children.add(const Center(child: LoadingIndicator()));
-        }
-
-        if (state.getMoreDocsStatus == WidgetStatus.error) {
-          children.add(const GenericError());
-        }
 
         return Expanded(
           child: ListView.separated(

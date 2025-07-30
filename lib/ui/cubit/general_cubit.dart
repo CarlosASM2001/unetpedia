@@ -72,9 +72,8 @@ class GeneralCubit extends Cubit<GeneralState> {
     );
   }
 
-  //void selectSubject(SubjectResponseModel? value) {
-  //  emit(state.copyWith(subjectSelected: Wrapped.value(value)));
-  //}
+  void selectSubject(SubjectModel? value) =>
+      emit(state.copyWith(subjectSelected: Wrapped.value(value)));
 
   // =======================================================================
   // Careers
@@ -107,7 +106,6 @@ class GeneralCubit extends Cubit<GeneralState> {
 
   Future<void> getUser() async {
     if (state.getUserStatus == WidgetStatus.loading) return;
-
     emit(state.copyWith(getUserStatus: WidgetStatus.loading));
 
     final response = await _firestoreProvider.getUser(
@@ -119,24 +117,24 @@ class GeneralCubit extends Cubit<GeneralState> {
         emit(state.copyWith(getUserStatus: WidgetStatus.error, exception: l));
       },
       (r) async {
-        // Verificando si la lista de carreras esta vacía para consumir la petición
-        if ((state.careers ?? []).isEmpty) {
-          await getCareers();
-        }
+        // Asignando la carrera a la que pertenece el usuario
+        if (state.userCareer == null) {
+          // Verificando si la lista de carreras esta vacía
+          if ((state.careers ?? []).isEmpty) {
+            await getCareers();
+          }
 
-        // Determinando la carrera del usuario para guardarla en el state
-        CareerModel? userCareer;
-        try {
-          userCareer = state.careers?.firstWhere((e) => e.id == r.careerId);
-        } catch (_) {
-          userCareer = null;
+          final userCareer = state.careers?.firstWhere(
+            (e) => (e.id == r.careerId),
+          );
+
+          emit(state.copyWith(userCareer: Wrapped.value(userCareer)));
         }
 
         emit(
           state.copyWith(
             getUserStatus: WidgetStatus.success,
             user: Wrapped.value(r),
-            userCareer: Wrapped.value(userCareer),
           ),
         );
       },

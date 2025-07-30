@@ -4,7 +4,6 @@ class SubjectsState extends Equatable {
   const SubjectsState({
     this.errorText = "",
     this.getDocumentsStatus = WidgetStatus.initial,
-    this.getMoreDocsStatus = WidgetStatus.initial,
     //this.documents,
     //this.subjectSelected,
     this.documentsQuery = "",
@@ -22,7 +21,6 @@ class SubjectsState extends Equatable {
   //final DocumentsResponseModel? documents;
   final DocumentDetail? documentDetail;
   final WidgetStatus getDocumentsStatus;
-  final WidgetStatus getMoreDocsStatus;
 
   // Upload Document
   final WidgetStatus uploadStatus;
@@ -32,7 +30,6 @@ class SubjectsState extends Equatable {
   List<Object?> get props => [
     errorText,
     getDocumentsStatus,
-    getMoreDocsStatus,
     //documents,
     //subjectSelected,
     documentsQuery,
@@ -44,7 +41,6 @@ class SubjectsState extends Equatable {
   SubjectsState copyWith({
     String? errorText,
     WidgetStatus? getDocumentsStatus,
-    WidgetStatus? getMoreDocsStatus,
     //Wrapped<DocumentsResponseModel?>? documents,
     //Wrapped<SubjectResponseModel?>? subjectSelected,
     String? documentsQuery,
@@ -55,7 +51,6 @@ class SubjectsState extends Equatable {
     return SubjectsState(
       errorText: errorText ?? this.errorText,
       getDocumentsStatus: getDocumentsStatus ?? this.getDocumentsStatus,
-      getMoreDocsStatus: getMoreDocsStatus ?? this.getMoreDocsStatus,
       //documents: documents != null ? documents.value : this.documents,
       //subjectSelected: subjectSelected != null
       //    ? subjectSelected.value

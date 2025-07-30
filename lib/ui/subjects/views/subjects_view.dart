@@ -5,6 +5,7 @@ import 'package:unetpedia/widgets/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
 import 'package:unetpedia/core/constants/constants_images.dart';
+import 'package:unetpedia/ui/subjects/views/subject_detail_view.dart';
 
 class SubjectsView extends StatelessWidget {
   const SubjectsView({super.key});
@@ -87,20 +88,23 @@ class __ContentState extends State<_Content> {
                           vertical: 16,
                         ),
                         itemBuilder: (context, index) {
-                          final subjects = (applyFilter)
+                          final subject = (applyFilter)
                               ? (state.subjectsFiltered?[index])
                               : (state.subjects?[index]);
 
                           return GenericCard(
-                            title: subjects?.name ?? "N/A",
+                            title: subject?.name ?? "N/A",
                             subtitle: "0 Archivos",
                             asset: ConstantImages.redCard,
                             onPressed: () {
                               FocusScope.of(context).unfocus();
                               FocusManager.instance.primaryFocus?.unfocus();
 
-                              // cubit.selectSubject(subject);
-                              // Navigator.pushNamed(context, SubjectDetailView.routeName);
+                              _cubit.selectSubject(subject);
+                              Navigator.pushNamed(
+                                context,
+                                SubjectDetailView.routeName,
+                              );
                             },
                           );
                         },

@@ -96,12 +96,8 @@ class _UserInfoComponent extends StatelessWidget {
       children: [
         const Divider(thickness: 1, color: Color(0xFFF1F5F9), height: 30),
         BlocBuilder<GeneralCubit, GeneralState>(
-          buildWhen: (p, c) =>
-              p.user?.name != c.user?.name ||
-              p.user?.lastName != c.user?.lastName ||
-              p.user?.photoUrl != c.user?.photoUrl,
+          buildWhen: (p, c) => (p.user != c.user),
           builder: (context, state) {
-            final user = state.user;
             return Row(
               children: [
                 Container(
@@ -116,7 +112,7 @@ class _UserInfoComponent extends StatelessWidget {
                     ),
                   ),
                   child: GenericNetworkImage(
-                    url: user?.photoUrl,
+                    url: state.user?.photoUrl,
                     borderRadius: 18,
                   ),
                 ),
@@ -133,7 +129,7 @@ class _UserInfoComponent extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "${user?.name ?? ''} ${user?.lastName ?? ''}",
+                        state.user?.fullName ?? "...",
                         style: const TextStyle(
                           fontSize: 18,
                           color: ConstantColors.cff141718,
@@ -160,7 +156,6 @@ class _UserInfoComponent extends StatelessWidget {
     );
   }
 }
-
 
 class _ListTile extends StatelessWidget {
   const _ListTile({required this.title, required this.icon, this.onPressed});

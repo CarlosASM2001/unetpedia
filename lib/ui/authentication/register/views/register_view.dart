@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/utils/validators.dart';
 import 'package:unetpedia/widgets/main_appbar.dart';
 import 'package:unetpedia/widgets/modals/modals.dart';
+import 'package:unetpedia/models/generic/generic.dart';
 import 'package:unetpedia/ui/home/views/home_view.dart';
 import 'package:unetpedia/widgets/inputs/form_input.dart';
 import 'package:unetpedia/widgets/loading_indicator.dart';
@@ -11,7 +12,6 @@ import 'package:unetpedia/widgets/buttons/generic_button.dart';
 import 'package:unetpedia/ui/authentication/authentication.dart';
 import 'package:unetpedia/widgets/dialogs/generic_status_dialog.dart';
 import 'package:unetpedia/models/authentication/register_request_model.dart';
-import 'package:unetpedia/models/generic/generic.dart';
 
 class RegisterView extends StatelessWidget {
   const RegisterView({super.key});
@@ -112,22 +112,6 @@ class __ContentState extends State<_Content> {
     super.dispose();
   }
 
-  void _imageSelectionModal() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      builder: (context) {
-        return UploadModal(onGetImage: (image) => _cubit.setImage(image));
-      },
-    );
-  }
-
   void _degreeSelectionModal() {
     showModalBottomSheet<void>(
       context: context,
@@ -172,7 +156,7 @@ class __ContentState extends State<_Content> {
               builder: (context, state) {
                 return PhotoComponent(
                   imageSelected: state.photoSelected,
-                  onPressed: () => _imageSelectionModal(),
+                  onGetImage: (photo) => _cubit.setImage(photo),
                 );
               },
             ),

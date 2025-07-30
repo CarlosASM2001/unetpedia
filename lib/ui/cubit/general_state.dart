@@ -12,7 +12,7 @@ class GeneralState extends Equatable {
     this.subjectsStatus = WidgetStatus.initial,
     this.subjects,
     this.departmentSelected,
-    //this.subjectSelected,
+    this.subjectSelected,
     this.departmentsQuery = "",
     this.subjectQuery = "",
     this.user,
@@ -46,7 +46,7 @@ class GeneralState extends Equatable {
   final WidgetStatus subjectsStatus;
   final List<SubjectModel>? subjects;
   final List<SubjectModel>? subjectsFiltered;
-  //final SubjectResponseModel? subjectSelected;
+  final SubjectModel? subjectSelected;
 
   @override
   List<Object?> get props => [
@@ -80,7 +80,7 @@ class GeneralState extends Equatable {
     WidgetStatus? subjectsStatus,
     Wrapped<List<SubjectModel>?>? subjects,
     Wrapped<DepartmentModel?>? departmentSelected,
-    //Wrapped<SubjectResponseModel?>? subjectSelected,
+    Wrapped<SubjectModel?>? subjectSelected,
     String? departmentsQuery,
     String? subjectQuery,
     Wrapped<UserResponseModel?>? user,
@@ -101,9 +101,9 @@ class GeneralState extends Equatable {
       departmentSelected: departmentSelected != null
           ? departmentSelected.value
           : this.departmentSelected,
-      //subjectSelected: subjectSelected != null
-      //    ? subjectSelected.value
-      //    : this.subjectSelected,
+      subjectSelected: subjectSelected != null
+          ? subjectSelected.value
+          : this.subjectSelected,
       departmentsQuery: departmentsQuery ?? this.departmentsQuery,
       subjectQuery: subjectQuery ?? this.subjectQuery,
       user: user != null ? user.value : this.user,

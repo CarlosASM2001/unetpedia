@@ -109,19 +109,17 @@ class FirestoreProvider {
     }
   }
 
-  // actualiza user informacion
-  Future<void> updateUserProfile({
+  // Edit user profile document
+  Future<void> updateProfile({
     required String uid,
     String? name,
     String? lastName,
-    String? photoUrl,
   }) async {
     final DocumentReference ref = _db.collection(_userCollection).doc(uid);
 
     final Map<String, dynamic> data = {};
     if (name != null) data['name'] = name;
     if (lastName != null) data['lastName'] = lastName;
-    if (photoUrl != null) data['photoUrl'] = photoUrl;
 
     await ref.update(data);
   }

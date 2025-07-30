@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:unetpedia/models/generic/generic.dart';
 import 'package:unetpedia/providers/firestore_provider.dart';
 import 'package:unetpedia/providers/authentication_provider.dart';
@@ -121,12 +120,16 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
   }
 
+  // ========================================================================
+  // Update
+  // ========================================================================
+
   Future<void> updateUserProfile({
     required String name,
     required String lastName,
-    File? imageFile,
   }) async {
     try {
+      if (state.genericStatus == WidgetStatus.loading) return;
       emit(state.copyWith(genericStatus: WidgetStatus.loading));
 
       final user = FirebaseAuth.instance.currentUser;
@@ -135,11 +138,11 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       String? photoUrl;
 
       // 1. Subir nueva imagen si se seleccionó
-      if (imageFile != null) {
+      if (state.photoSelected != null) {
         photoUrl = await _firestoreProvider.uploadImage(
           storagePath: StoragePath.profile,
           path: "${user.uid}/${DateTime.now().toString()}.jpg",
-          image: imageFile,
+          image: state.photoSelected!.file,
         );
 
         // 2. Actualizar campo photoUrl en documento Firestore
@@ -147,7 +150,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       }
 
       // 3. Actualizar nombre en Firestore
-      await _firestoreProvider.updateUserProfile(
+      await _firestoreProvider.updateProfile(
         uid: user.uid,
         name: name,
         lastName: lastName,
