@@ -236,21 +236,41 @@ class _QualificationViewState extends State<QualificationView> {
                                     style: TextStyle(fontSize: 12),
                                   ),
                                   const SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  Column(
                                     children: [
-                                      const Text('84-85 = 8.0', style: TextStyle(fontSize: 12)),
-                                      const Text('62-63 = 6.0', style: TextStyle(fontSize: 12)),
-                                      const Text('39-40 = 4.0', style: TextStyle(fontSize: 12)),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text('95+ = 9.0', style: TextStyle(fontSize: 12)),
-                                      const Text('51 = 5.0', style: TextStyle(fontSize: 12)),
-                                      const Text('28-29 = 3.0', style: TextStyle(fontSize: 12)),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text('95-100 = 9.0', style: TextStyle(fontSize: 11)),
+                                          const Text('84-94 = 8.0', style: TextStyle(fontSize: 11)),
+                                          const Text('73-83 = 7.0', style: TextStyle(fontSize: 11)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text('62-72 = 6.0', style: TextStyle(fontSize: 11)),
+                                          const Text('51-61 = 5.0', style: TextStyle(fontSize: 11)),
+                                          const Text('39-50 = 4.0', style: TextStyle(fontSize: 11)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text('28-38 = 3.0', style: TextStyle(fontSize: 11)),
+                                          const Text('17-27 = 2.0', style: TextStyle(fontSize: 11)),
+                                          const Text('8-16 = 1.0', style: TextStyle(fontSize: 11)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      const Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text('0-7 = 0.0', style: TextStyle(fontSize: 11)),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ],
