@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/models/generic/generic.dart';
 import 'package:unetpedia/providers/firestore_provider.dart';
@@ -117,6 +119,56 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         emit(state.copyWith(genericStatus: WidgetStatus.success));
       },
     );
+  }
+
+  Future<void> updateUserProfile({
+    required String name,
+    required String lastName,
+    File? imageFile,
+  }) async {
+    try {
+      emit(state.copyWith(genericStatus: WidgetStatus.loading));
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) throw Exception("Usuario no autenticado");
+
+      String? photoUrl;
+
+      // 1. Subir nueva imagen si se seleccionó
+      if (imageFile != null) {
+        photoUrl = await _firestoreProvider.uploadImage(
+          storagePath: StoragePath.profile,
+          path: "${user.uid}/${DateTime.now().toString()}.jpg",
+          image: imageFile,
+        );
+
+        // 2. Actualizar campo photoUrl en documento Firestore
+        await _firestoreProvider.updateProfileUrl(user.uid, photoUrl);
+      }
+
+      // 3. Actualizar nombre en Firestore
+      await _firestoreProvider.updateUserProfile(
+        uid: user.uid,
+        name: name,
+        lastName: lastName,
+      );
+
+      // 4. (Opcional) actualizar nombre e imagen en Firebase Auth
+      await user.updateDisplayName(name);
+      await user.updateDisplayName(lastName);
+      if (photoUrl != null) {
+        await user.updatePhotoURL(photoUrl);
+      }
+
+      emit(state.copyWith(genericStatus: WidgetStatus.success));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          genericStatus: WidgetStatus.error,
+          errorText: "Error al actualizar perfil: ${e.toString()}",
+        ),
+      );
+    }
   }
 
   // ========================================================================
