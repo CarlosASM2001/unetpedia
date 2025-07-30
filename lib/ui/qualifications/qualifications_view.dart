@@ -238,30 +238,35 @@ class _QualificationViewState extends State<QualificationView> {
                                   const SizedBox(height: 8),
                                   Column(
                                     children: [
+                                      const Text(
+                                        'Ejemplos de conversión:',
+                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                                      ),
+                                      const SizedBox(height: 8),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          const Text('95-100 = 9.0', style: TextStyle(fontSize: 11)),
-                                          const Text('84-94 = 8.0', style: TextStyle(fontSize: 11)),
-                                          const Text('73-83 = 7.0', style: TextStyle(fontSize: 11)),
+                                          const Text('95+ = 9.0', style: TextStyle(fontSize: 11)),
+                                          const Text('84-85 = 8.0', style: TextStyle(fontSize: 11)),
+                                          const Text('80 = 7.6', style: TextStyle(fontSize: 11)),
                                         ],
                                       ),
                                       const SizedBox(height: 4),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          const Text('62-72 = 6.0', style: TextStyle(fontSize: 11)),
-                                          const Text('51-61 = 5.0', style: TextStyle(fontSize: 11)),
-                                          const Text('39-50 = 4.0', style: TextStyle(fontSize: 11)),
+                                          const Text('75 = 7.1', style: TextStyle(fontSize: 11)),
+                                          const Text('73-74 = 7.0', style: TextStyle(fontSize: 11)),
+                                          const Text('70 = 6.7', style: TextStyle(fontSize: 11)),
                                         ],
                                       ),
                                       const SizedBox(height: 4),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          const Text('28-38 = 3.0', style: TextStyle(fontSize: 11)),
-                                          const Text('17-27 = 2.0', style: TextStyle(fontSize: 11)),
-                                          const Text('8-16 = 1.0', style: TextStyle(fontSize: 11)),
+                                          const Text('62-63 = 6.0', style: TextStyle(fontSize: 11)),
+                                          const Text('51 = 5.0', style: TextStyle(fontSize: 11)),
+                                          const Text('8+ = 1.0', style: TextStyle(fontSize: 11)),
                                         ],
                                       ),
                                       const SizedBox(height: 4),
