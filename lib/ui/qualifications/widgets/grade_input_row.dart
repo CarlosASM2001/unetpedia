@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:unetpedia/models/models.dart';
+import 'package:unetpedia/models/grade_model.dart';
 import 'package:unetpedia/widgets/inputs/form_input.dart';
-import 'package:unetpedia/utils/validators.dart';
 
 class GradeInputRow extends StatefulWidget {
   final Grade grade;
@@ -45,7 +44,9 @@ class _GradeInputRowState extends State<GradeInputRow> {
       _percentageController.text = widget.grade.percentage.toString();
     }
     if (oldWidget.grade.score != widget.grade.score) {
-      _scoreController.text = widget.grade.score > 0 ? widget.grade.score.toString() : '';
+      _scoreController.text = widget.grade.score > 0
+          ? widget.grade.score.toString()
+          : '';
     }
   }
 
@@ -99,7 +100,9 @@ class _GradeInputRowState extends State<GradeInputRow> {
                         return 'Requerido';
                       }
                       final percentage = double.tryParse(value);
-                      if (percentage == null || percentage < 0 || percentage > 100) {
+                      if (percentage == null ||
+                          percentage < 0 ||
+                          percentage > 100) {
                         return 'Entre 0-100';
                       }
                       return null;
@@ -107,7 +110,10 @@ class _GradeInputRowState extends State<GradeInputRow> {
                     onChange: (value) {
                       final percentage = double.tryParse(value);
                       if (percentage != null) {
-                        widget.onGradeChanged(widget.index, percentage: percentage);
+                        widget.onGradeChanged(
+                          widget.index,
+                          percentage: percentage,
+                        );
                       }
                     },
                   ),
@@ -141,18 +147,12 @@ class _GradeInputRowState extends State<GradeInputRow> {
               children: [
                 Text(
                   'Base 9: ${widget.grade.convertedScore.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
                 const Spacer(),
                 Text(
                   'Ponderado: ${widget.grade.weightedScore.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),

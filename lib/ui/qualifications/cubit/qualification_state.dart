@@ -1,13 +1,7 @@
-part of 'grade_calculator_cubit.dart';
+part of 'qualification_cubit.dart';
 
-class GradeCalculatorState extends Equatable {
-  final List<Grade> grades;
-  final GradeCalculation calculation;
-  final double? neededScore;
-  final bool isLoading;
-  final String? error;
-
-  const GradeCalculatorState({
+class QualificationState extends Equatable {
+  const QualificationState({
     this.grades = const [],
     this.calculation = const GradeCalculation(
       grades: [],
@@ -19,23 +13,29 @@ class GradeCalculatorState extends Equatable {
     this.error,
   });
 
+  final List<Grade> grades;
+  final GradeCalculation calculation;
+  final double? neededScore;
+  final bool isLoading;
+  final String? error;
+
   @override
   List<Object?> get props => [
-        grades,
-        calculation,
-        neededScore,
-        isLoading,
-        error,
-      ];
+    grades,
+    calculation,
+    neededScore,
+    isLoading,
+    error,
+  ];
 
-  GradeCalculatorState copyWith({
+  QualificationState copyWith({
     List<Grade>? grades,
     GradeCalculation? calculation,
     double? neededScore,
     bool? isLoading,
     String? error,
   }) {
-    return GradeCalculatorState(
+    return QualificationState(
       grades: grades ?? this.grades,
       calculation: calculation ?? this.calculation,
       neededScore: neededScore ?? this.neededScore,

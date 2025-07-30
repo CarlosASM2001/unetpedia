@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:unetpedia/ui/qualifications/cubit/grade_calculator_cubit.dart';
-import 'package:unetpedia/ui/qualifications/qualifications_view.dart';
-import 'package:unetpedia/ui/qualifications/tutors_view.dart';
 import 'package:unetpedia/ui/ui.dart';
 
 class AppRouter {
@@ -33,12 +29,9 @@ class AppRouter {
     SubjectDocumentView.routeName: (context) => const SubjectDocumentView(),
 
     // Qualification
-    QualificationView.routeName: (context) => BlocProvider(
-      create: (context) => GradeCalculatorCubit(),
-      child: const QualificationView(),
-    ),
+    QualificationView.routeName: (context) => const QualificationView(),
 
     //
-    TutorsView.routeName: (context) => const TutorsView(),
+    // TutorsView.routeName: (context) => const TutorsView(),
   };
 }
