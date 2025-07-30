@@ -8,5 +8,6 @@ export "generic_card.dart";
 export "generic_error.dart";
 export "generic_network_image.dart";
 export "generic_title.dart";
+export "grade_input_row.dart";
 export "loading_indicator.dart";
 export "main_appbar.dart";

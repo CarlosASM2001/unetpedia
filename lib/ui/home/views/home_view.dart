@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
 import 'package:unetpedia/core/constants/constants_images.dart';
 import 'package:unetpedia/ui/departments/views/departaments_view.dart';
+import 'package:unetpedia/ui/qualifications/qualifications_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -94,10 +95,10 @@ class _HomeViewState extends State<HomeView> {
                               "Calcula lo que te falta para cada parcial.",
                           asset: ConstantImages.blueCard,
                           onPressed: () {
-                            // Navigator.pushNamed(
-                            //   context,
-                            //   QualificationView.routeName,
-                            // );
+                            Navigator.pushNamed(
+                              context,
+                              QualificationView.routeName,
+                            );
                           },
                         ),
                       ],
