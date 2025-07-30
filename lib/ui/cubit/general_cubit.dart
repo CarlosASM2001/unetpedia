@@ -106,8 +106,8 @@ class GeneralCubit extends Cubit<GeneralState> {
   // =======================================================================
 
   Future<void> getUser() async {
-    if (state.user != null) return;
     if (state.getUserStatus == WidgetStatus.loading) return;
+
     emit(state.copyWith(getUserStatus: WidgetStatus.loading));
 
     final response = await _firestoreProvider.getUser(
@@ -119,16 +119,18 @@ class GeneralCubit extends Cubit<GeneralState> {
         emit(state.copyWith(getUserStatus: WidgetStatus.error, exception: l));
       },
       (r) async {
-        // Verificando si la lista de carreras esta vacia para consumir
-        // la peticion
+        // Verificando si la lista de carreras esta vacía para consumir la petición
         if ((state.careers ?? []).isEmpty) {
           await getCareers();
         }
 
-        // Determinando la carrera del usuario para guardarla en el state¿
-        final userCareer = state.careers?.firstWhere(
-          (e) => (e.id == r.careerId),
-        );
+        // Determinando la carrera del usuario para guardarla en el state
+        CareerModel? userCareer;
+        try {
+          userCareer = state.careers?.firstWhere((e) => e.id == r.careerId);
+        } catch (_) {
+          userCareer = null;
+        }
 
         emit(
           state.copyWith(
