@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:unetpedia/ui/cubit/cubit.dart';
 import 'package:unetpedia/utils/debouncer.dart';
 import 'package:unetpedia/widgets/widgets.dart';
 import 'package:unetpedia/ui/subjects/subjects.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
+import 'package:unetpedia/core/constants/constants_images.dart';
 
+// Listado de documentos de la materia seleccionada
 class SubjectDetailView extends StatelessWidget {
   const SubjectDetailView({super.key});
   static const String routeName = 'subject_detail_view';
@@ -13,9 +16,10 @@ class SubjectDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SubjectsCubit(),
-      //..setSubject(context.read<GeneralCubit>().state.subjectSelected),
       child: Scaffold(
-        appBar: const MainAppBar(title: "Detalles"),
+        appBar: MainAppBar(
+          title: context.read<GeneralCubit>().state.departmentSelected!.name!,
+        ),
         floatingActionButton: GenericIconButton(
           icon: Icons.add_box_rounded,
           onPressed: () {
@@ -36,12 +40,18 @@ class _View extends StatefulWidget {
 }
 
 class __ViewState extends State<_View> {
-  late SubjectsCubit cubit;
+  late SubjectsCubit _cubit;
+  late GeneralCubit _generalCubit;
 
   @override
   void initState() {
-    cubit = context.read<SubjectsCubit>();
-    //cubit.getDocuments();
+    _cubit = context.read<SubjectsCubit>();
+    _generalCubit = context.read<GeneralCubit>();
+
+    _cubit.getFilesBySubject(
+      departmentId: _generalCubit.state.departmentSelected?.id,
+      subjectId: _generalCubit.state.subjectSelected?.id,
+    );
 
     super.initState();
   }
@@ -60,13 +70,62 @@ class __ViewState extends State<_View> {
                 case WidgetStatus.loading:
                   return const Center(child: LoadingIndicator());
                 case WidgetStatus.error:
-                  return const Center(child: GenericError());
+                  return Center(
+                    child: GenericError(error: state.exception?.details),
+                  );
                 case WidgetStatus.success:
                   return Column(
                     children: [
-                      //GenericTitle(title: state.subjectSelected?.name ?? "N/A"),
+                      BlocBuilder<GeneralCubit, GeneralState>(
+                        buildWhen: (p, c) =>
+                            (p.subjectSelected != c.subjectSelected),
+                        builder: (context, state) {
+                          return GenericTitle(
+                            title: state.subjectSelected?.name ?? "N/A",
+                          );
+                        },
+                      ),
                       const SizedBox(height: 16),
-                      const _RenderContent(),
+
+                      ((state.documents ?? []).isEmpty)
+                          ? Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                "No hemos encontrado resultados para tu búsqueda.",
+                                textAlign: TextAlign.center,
+                              ),
+                            )
+                          : Expanded(
+                              child: ListView.separated(
+                                shrinkWrap: true,
+                                itemCount: state.documents?.length ?? 0,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 16,
+                                ),
+                                itemBuilder: (context, index) {
+                                  return SubjectCard(
+                                    title:
+                                        state.documents?[index].name ?? "N/A",
+                                    asset: ConstantImages.yellowCard,
+                                    onPressed: () {
+                                      //Navigator.pushNamed(
+                                      //  context,
+                                      //  SubjectDocumentView.routeName,
+                                      //);
+                                    },
+                                    onWatch: () {
+                                      //Navigator.pushNamed(
+                                      //  context,
+                                      //  SubjectDocumentView.routeName,
+                                      //);
+                                    },
+                                  );
+                                },
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: 16),
+                              ),
+                            ),
                     ],
                   );
                 default:
@@ -76,74 +135,6 @@ class __ViewState extends State<_View> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _RenderContent extends StatefulWidget {
-  const _RenderContent();
-
-  @override
-  State<_RenderContent> createState() => __RenderContentState();
-}
-
-class __RenderContentState extends State<_RenderContent> {
-  late SubjectsCubit cubit;
-  late ScrollController scrollController;
-
-  @override
-  void initState() {
-    cubit = context.read<SubjectsCubit>();
-    scrollController = ScrollController();
-
-    scrollController.addListener(() {
-      // double position = scrollController.position.pixels;
-      // double maxExtend = scrollController.position.maxScrollExtent;
-      //if (position > maxExtend - 30) {
-      //  cubit.getDocuments();
-      //}
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<SubjectsCubit, SubjectsState>(
-      builder: (context, state) {
-        List<Widget> children = [];
-
-        // for (DocumentResponseModel? document in state.documents!.data!) {
-        //   children.add(
-        //     SubjectCard(
-        //       title: document?.name ?? "N/A",
-        //       asset: ConstantImages.yellowCard,
-        //       onPressed: () {
-        //         Navigator.pushNamed(context, SubjectDocumentView.routeName);
-        //       },
-        //       onWatch: () {
-        //         Navigator.pushNamed(context, SubjectDocumentView.routeName);
-        //       },
-        //     ),
-        //   );
-        // }
-
-        return Expanded(
-          child: ListView.separated(
-            shrinkWrap: true,
-            controller: scrollController,
-            itemCount: children.length,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            itemBuilder: (context, index) => children[index],
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
-          ),
-        );
-      },
     );
   }
 }

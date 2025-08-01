@@ -58,7 +58,11 @@ class _SelectDegreeModalState extends State<SelectDegreeModal> {
             builder: (context, state) {
               switch (state.careersStatus) {
                 case WidgetStatus.error:
-                  return const Expanded(child: Center(child: GenericError()));
+                  return Expanded(
+                    child: Center(
+                      child: GenericError(error: state.exception?.details),
+                    ),
+                  );
 
                 case WidgetStatus.loading:
                   return const Expanded(

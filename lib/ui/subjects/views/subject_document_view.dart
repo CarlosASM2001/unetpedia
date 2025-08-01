@@ -7,6 +7,7 @@ import 'package:unetpedia/widgets/loading_indicator.dart';
 import 'package:unetpedia/widgets/main_appbar.dart';
 import 'package:unetpedia/ui/subjects/cubit/cubit.dart';
 
+// Detalles de un documento
 class SubjectDocumentView extends StatelessWidget {
   const SubjectDocumentView({super.key});
   static const String routeName = 'subject_document_view';
@@ -54,7 +55,7 @@ class __ViewState extends State<_View> {
           case WidgetStatus.loading:
             return const Center(child: LoadingIndicator());
           case WidgetStatus.error:
-            return const Center(child: GenericError());
+            return Center(child: GenericError(error: state.exception?.details));
           default:
             return PDFView(filePath: state.fileSelected!.file.path);
         }

@@ -60,7 +60,7 @@ class GeneralState extends Equatable {
     subjectsStatus,
     subjects,
     departmentSelected,
-    //subjectSelected,
+    subjectSelected,
     departmentsQuery,
     subjectQuery,
     user,

@@ -2,19 +2,18 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unetpedia/models/generic/wrapped.dart';
 import 'package:unetpedia/models/generic/file_model.dart';
-import 'package:unetpedia/models/documents/documents.dart';
+import 'package:unetpedia/providers/firestore_provider.dart';
 import 'package:unetpedia/models/generic/generic_enums.dart';
+import 'package:unetpedia/models/subject/document_model.dart';
+import 'package:unetpedia/models/generic/data_exception_model.dart';
+import 'package:unetpedia/models/subject/document_request_model.dart';
 
 part 'subjects_state.dart';
 
 class SubjectsCubit extends Cubit<SubjectsState> {
   SubjectsCubit() : super(const SubjectsState());
 
-  //final _documentsProvider = DocumentsProvider();
-
-  // void setSubject(SubjectResponseModel? value) {
-  //   emit(state.copyWith(subjectSelected: Wrapped.value(value)));
-  // }
+  final _firestoreProvider = FirestoreProvider();
 
   // void setDocumentsQuery(String value) {
   //   emit(
@@ -25,75 +24,53 @@ class SubjectsCubit extends Cubit<SubjectsState> {
   //   );
   // }
 
-  void selectFile(FileModel value) {
-    emit(state.copyWith(fileSelected: Wrapped.value(value)));
-  }
+  void selectFile(FileModel value) =>
+      emit(state.copyWith(fileSelected: Wrapped.value(value)));
 
   // ========================================================================
   // Get Documents
   // ========================================================================
 
-  /*Future<void> getDocuments() async {
-    if (state.getDocumentsStatus == WidgetStatus.loading ||
-        state.getMoreDocsStatus == WidgetStatus.loading) {
+  Future<void> getFilesBySubject({
+    required String? departmentId,
+    required String? subjectId,
+  }) async {
+    if (state.getDocumentsStatus == WidgetStatus.loading) return;
+    emit(state.copyWith(getDocumentsStatus: WidgetStatus.loading));
+
+    if ((departmentId ?? "").isEmpty || (subjectId ?? "").isEmpty) {
+      emit(
+        state.copyWith(
+          getDocumentsStatus: WidgetStatus.error,
+          exception: DataException(
+            details: "No hemos podido realizar la consulta.",
+          ),
+        ),
+      );
       return;
     }
 
-    int? page = 1;
-
-    if (state.documents != null) {
-      if ((state.documents?.pages?.next) == null) return;
-
-      page = state.documents?.pages?.next;
-    }
-
-    if (page != 1) {
-      emit(state.copyWith(getMoreDocsStatus: WidgetStatus.loading));
-    } else {
-      emit(state.copyWith(getDocumentsStatus: WidgetStatus.loading));
-    }
-
-    final response = await _documentsProvider.getDocuments(
-      page: page!,
-      subjectId: state.subjectSelected!.id!,
-      name: state.documentsQuery,
+    final response = await _firestoreProvider.getFilesBySubject(
+      departmentId: departmentId!,
+      subjectId: subjectId!,
     );
 
     return response.fold(
       (l) {
-        if (page != 1) {
-          emit(
-            state.copyWith(
-              getMoreDocsStatus: WidgetStatus.error,
-              errorText: l.details,
-            ),
-          );
-        } else {
-          emit(
-            state.copyWith(
-              getDocumentsStatus: WidgetStatus.error,
-              errorText: l.details,
-            ),
-          );
-        }
+        emit(
+          state.copyWith(getDocumentsStatus: WidgetStatus.error, exception: l),
+        );
       },
       (r) async {
         emit(
           state.copyWith(
             getDocumentsStatus: WidgetStatus.success,
-            getMoreDocsStatus: WidgetStatus.success,
-            documents: Wrapped.value(
-              (state.documents ?? DocumentsResponseModel()).copyWith(
-                data: [...(state.documents?.data ?? []), ...r.data!],
-                pages: r.pages,
-                count: r.count,
-              ),
-            ),
+            documents: Wrapped.value(r),
           ),
         );
       },
     );
-  }*/
+  }
 
   /*Future<void> getDocumentDetail() async {
     if (state.getDocumentsStatus == WidgetStatus.loading) return;
@@ -126,51 +103,64 @@ class SubjectsCubit extends Cubit<SubjectsState> {
   // Upload Documents
   // ========================================================================
 
-  /*Future<void> createDocument({required int category}) async {
-    if (state.uploadStatus == WidgetStatus.loading) return;
+  // Se sube un archivo al storage y se crea el documento en la base de datos
+  Future<void> createDocument({
+    required String tile,
+    required String? userId,
+    required String? departmentId,
+    required String? subjectId,
+  }) async {
+    if (state.uploadStatus == WidgetStatus.loading ||
+        state.fileSelected?.file == null) {
+      return;
+    }
     emit(state.copyWith(uploadStatus: WidgetStatus.loading));
 
-    final response = await _documentsProvider.createDocument(
-      name: state.fileSelected!.name,
-      category: category,
-      subject: state.subjectSelected!.id!,
+    if ((userId ?? "").isEmpty ||
+        (departmentId ?? "").isEmpty ||
+        (subjectId ?? "").isEmpty) {
+      emit(
+        state.copyWith(
+          getDocumentsStatus: WidgetStatus.error,
+          exception: DataException(
+            details: "No hemos podido realizar la consulta.",
+          ),
+        ),
+      );
+      return;
+    }
+
+    // 1. Subiendo el archivo seleccionado
+    final fileUrl = await _firestoreProvider.uploadFile(
+      storagePath: StoragePath.files,
+      path:
+          "$userId/${DateTime.now().toString()}${state.fileSelected!.getExtension}",
+      file: state.fileSelected!.file,
+    );
+
+    // 2. Creando el documento
+    final response = await _firestoreProvider.createFileDocument(
+      userId: userId!,
+      departmentId: departmentId!,
+      subjectId: subjectId!,
+      data: DocumentRequestModel(
+        name: tile,
+        url: fileUrl,
+        size: state.fileSelected!.getSizeInBytes,
+        extension: state.fileSelected!.getExtension,
+      ),
     );
 
     return response.fold(
       (l) {
-        emit(
-          state.copyWith(
-            uploadStatus: WidgetStatus.error,
-            errorText: l.details,
-          ),
-        );
+        emit(state.copyWith(uploadStatus: WidgetStatus.error, exception: l));
       },
       (r) async {
-        await _uploadDocument(r.presignedUrl);
-      },
-    );
-  }*/
-
-  /*Future<void> _uploadDocument(String? presigned) async {
-    final response = await _documentsProvider.uploadDocument(
-      presignedUrl: presigned!,
-      file: state.fileSelected!,
-    );
-
-    return response.fold(
-      (l) {
-        emit(
-          state.copyWith(
-            errorText: l.details,
-            uploadStatus: WidgetStatus.initial,
-          ),
-        );
-      },
-      (r) async {
+        //await _uploadDocument(r.presignedUrl);
         emit(state.copyWith(uploadStatus: WidgetStatus.success));
       },
     );
-  }*/
+  }
 
   // Download
   /*Future<void> _download() async {

@@ -60,7 +60,9 @@ class _HomeViewState extends State<HomeView> {
                   case WidgetStatus.loading:
                     return const Center(child: LoadingIndicator());
                   case WidgetStatus.error:
-                    return const Center(child: GenericError());
+                    return Center(
+                      child: GenericError(error: state.exception?.details),
+                    );
                   default:
                     return ListView(
                       padding: const EdgeInsets.symmetric(vertical: 28),

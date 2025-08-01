@@ -6,7 +6,6 @@ class RegisterRequestModel {
   final String role;
   final String description;
   final String? careerId;
-
   final String password;
 
   RegisterRequestModel({
@@ -16,7 +15,7 @@ class RegisterRequestModel {
     this.photoUrl,
     required this.role,
     required this.description,
-    this.careerId,
+    required this.careerId,
     required this.password,
   });
 

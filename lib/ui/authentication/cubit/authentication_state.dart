@@ -2,7 +2,7 @@ part of 'authentication_cubit.dart';
 
 class AuthenticationState extends Equatable {
   const AuthenticationState({
-    this.errorText = "",
+    this.exception,
     this.showPassword = true,
     this.rememberMe = false,
     this.genericStatus = WidgetStatus.initial,
@@ -17,7 +17,7 @@ class AuthenticationState extends Equatable {
   final String? email;
   final String? password;
   final WidgetStatus genericStatus;
-  final String errorText;
+  final DataException? exception;
 
   // Login
   final bool showPassword;
@@ -32,7 +32,7 @@ class AuthenticationState extends Equatable {
 
   @override
   List<Object?> get props => [
-    errorText,
+    exception,
     genericStatus,
     showPassword,
     rememberMe,
@@ -44,7 +44,7 @@ class AuthenticationState extends Equatable {
   ];
 
   AuthenticationState copyWith({
-    String? errorText,
+    DataException? exception,
     WidgetStatus? genericStatus,
     bool? showPassword,
     bool? rememberMe,
@@ -55,7 +55,7 @@ class AuthenticationState extends Equatable {
     WidgetStatus? presignedStatus,
   }) {
     return AuthenticationState(
-      errorText: errorText ?? this.errorText,
+      exception: exception ?? this.exception,
       genericStatus: genericStatus ?? this.genericStatus,
       showPassword: showPassword ?? this.showPassword,
       rememberMe: rememberMe ?? this.rememberMe,

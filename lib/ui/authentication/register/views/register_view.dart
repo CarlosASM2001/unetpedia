@@ -39,11 +39,12 @@ class RegisterView extends StatelessWidget {
                 break;
 
               case WidgetStatus.error:
+                Navigator.pop(context);
                 showDialog<void>(
                   context: context,
                   barrierDismissible: false,
                   builder: (context) => GenericStatusDialog(
-                    description: state.errorText,
+                    description: state.exception?.details,
                     isErrorDialog: true,
                   ),
                 );
@@ -258,6 +259,7 @@ class __ContentState extends State<_Content> {
                       ? null
                       : () {
                           FocusScope.of(context).unfocus();
+                          FocusManager.instance.primaryFocus?.unfocus();
 
                           // Validando el formulario
                           if (_formKey.currentState!.validate() &&

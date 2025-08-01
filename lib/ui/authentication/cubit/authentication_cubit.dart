@@ -49,12 +49,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
     return response.fold(
       (l) {
-        emit(
-          state.copyWith(
-            genericStatus: WidgetStatus.error,
-            errorText: l.details,
-          ),
-        );
+        emit(state.copyWith(genericStatus: WidgetStatus.error, exception: l));
       },
       (r) async {
         // 1. Actualizando campo de ultimo inicio de sesion
@@ -83,12 +78,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
     response.fold(
       (l) {
-        emit(
-          state.copyWith(
-            genericStatus: WidgetStatus.error,
-            errorText: l.details,
-          ),
-        );
+        emit(state.copyWith(genericStatus: WidgetStatus.error, exception: l));
       },
       (r) async {
         // Validando campos
@@ -96,7 +86,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
           emit(
             state.copyWith(
               genericStatus: WidgetStatus.error,
-              errorText: "Campos invalidos.",
+              exception: DataException(details: "Campos invalidos."),
             ),
           );
           return;
@@ -106,10 +96,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         await _firestoreProvider.createUserDocument(data, r.user!.uid);
 
         // 2. Subiendo imagen de perfil
-        final url = await _firestoreProvider.uploadImage(
+        final url = await _firestoreProvider.uploadFile(
           storagePath: StoragePath.profile,
           path: "${r.user!.uid}/${DateTime.now().toString()}.jpg",
-          image: state.photoSelected!.file,
+          file: state.photoSelected!.file,
         );
 
         // 3. Actualizando campo de foto de perfil con la url en el documento
@@ -139,10 +129,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
       // 1. Subir nueva imagen si se seleccionó
       if (state.photoSelected != null) {
-        photoUrl = await _firestoreProvider.uploadImage(
+        photoUrl = await _firestoreProvider.uploadFile(
           storagePath: StoragePath.profile,
           path: "${user.uid}/${DateTime.now().toString()}.jpg",
-          image: state.photoSelected!.file,
+          file: state.photoSelected!.file,
         );
 
         // 2. Actualizar campo photoUrl en documento Firestore
@@ -168,7 +158,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       emit(
         state.copyWith(
           genericStatus: WidgetStatus.error,
-          errorText: "Error al actualizar perfil: ${e.toString()}",
+          exception: DataException(
+            details: "Error al actualizar perfil: ${e.toString()}",
+          ),
         ),
       );
     }
@@ -187,7 +179,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   //       currentPassword: currentPassword, newPassword: newPassword);
   //
   //   return response.fold((l) {
-  //     emit(state.copyWith(status: WidgetStatus.error, errorText: l.details));
+  //     emit(state.copyWith(status: WidgetStatus.error, exception: l));
   //   }, (r) async {
   //     emit(state.copyWith(
   //         status: WidgetStatus.success, password: Wrapped.value(newPassword)));

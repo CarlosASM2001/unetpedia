@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:unetpedia/ui/cubit/cubit.dart';
 import 'package:unetpedia/utils/validators.dart';
 import 'package:unetpedia/widgets/main_appbar.dart';
 import 'package:unetpedia/ui/subjects/cubit/cubit.dart';
@@ -12,6 +13,7 @@ import 'package:unetpedia/widgets/modals/upload_file_modal.dart';
 import 'package:unetpedia/core/constants/constant_colors.dart';
 import 'package:unetpedia/widgets/dialogs/generic_status_dialog.dart';
 
+// Formulario para agregar documentos a la materia seleccionada
 class AddSubjectDocumentView extends StatelessWidget {
   const AddSubjectDocumentView({super.key});
   static const String routeName = 'add_subject_document_view';
@@ -20,61 +22,58 @@ class AddSubjectDocumentView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SubjectsCubit(),
-      //..setSubject(context.read<GeneralCubit>().state.subjectSelected),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: MainAppBar(
-          title: "context.read<GeneralCubit>().state.subjectSelected?.name",
-          isWhite: true,
-        ),
-        body: BlocConsumer<SubjectsCubit, SubjectsState>(
+        appBar: MainAppBar(title: "Subir Archivo", isWhite: true),
+        body: BlocListener<SubjectsCubit, SubjectsState>(
           listenWhen: (p, c) => (p.uploadStatus != c.uploadStatus),
           listener: (context, state) {
             switch (state.uploadStatus) {
-              case WidgetStatus.error:
+              case WidgetStatus.loading:
                 showDialog<void>(
                   context: context,
-                  builder: (context) => GenericStatusDialog(
-                    description: state.errorText,
-                    isErrorDialog: true,
+                  barrierDismissible: false,
+                  builder: (context) => PopScope(
+                    canPop: false,
+                    child: Center(child: LoadingIndicator()),
                   ),
                 );
                 break;
-              case WidgetStatus.success:
+
+              case WidgetStatus.error:
+                Navigator.pop(context);
                 showDialog<void>(
                   context: context,
                   barrierDismissible: false,
                   builder: (context) => GenericStatusDialog(
-                    title: "Operación exitosa.",
-                    description: "Archivo subido.",
-                    onTap: () {
-                      //context.read<GeneralCubit>().getSubjects();
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                    },
+                    description: state.exception?.details,
+                    isErrorDialog: true,
                   ),
                 );
                 break;
+
+              case WidgetStatus.success:
+                Navigator.pop(context);
+                showDialog<void>(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (ctx) => PopScope(
+                    canPop: false,
+                    child: GenericStatusDialog(
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                );
+                break;
+
               default:
                 break;
             }
           },
-          buildWhen: (p, c) => (p.uploadStatus != c.uploadStatus),
-          builder: (context, state) {
-            return Stack(
-              children: [
-                const _View(),
-                if (state.uploadStatus == WidgetStatus.loading)
-                  Positioned.fill(
-                    child: Container(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      child: const Center(child: LoadingIndicator()),
-                    ),
-                  ),
-              ],
-            );
-          },
+          child: const _View(),
         ),
       ),
     );
@@ -91,23 +90,29 @@ class _View extends StatefulWidget {
 class __ViewState extends State<_View> {
   final _formKey = GlobalKey<FormState>();
 
-  late SubjectsCubit cubit;
-  late TextEditingController _nameController;
+  late SubjectsCubit _cubit;
+  late GeneralCubit _generalCubit;
+  late TextEditingController _titleController;
 
   @override
   void initState() {
-    cubit = context.read<SubjectsCubit>();
-    _nameController = TextEditingController();
+    _cubit = context.read<SubjectsCubit>();
+    _generalCubit = context.read<GeneralCubit>();
+
+    _titleController = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _titleController.dispose();
     super.dispose();
   }
 
   void _documentSelectionModal() {
+    FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -118,7 +123,7 @@ class __ViewState extends State<_View> {
         ),
       ),
       builder: (context) {
-        return UploadFileModal(onGetFile: (file) => cubit.selectFile(file));
+        return UploadFileModal(onGetFile: (file) => _cubit.selectFile(file));
       },
     );
   }
@@ -135,9 +140,9 @@ class __ViewState extends State<_View> {
             child: Column(
               children: [
                 FormInput(
-                  labelText: "Título del Documento",
-                  hintText: "Ingresar nombre del archivo",
-                  controller: _nameController,
+                  labelText: "Título",
+                  hintText: "Ingresar título",
+                  controller: _titleController,
                   keyboardType: TextInputType.text,
                   validator: (value) => Validators.emptyValidation(value),
                 ),
@@ -146,8 +151,8 @@ class __ViewState extends State<_View> {
                   buildWhen: (p, c) => (p.fileSelected != c.fileSelected),
                   builder: (context, state) {
                     return _UploadFile(
-                      onPressed: () => _documentSelectionModal(),
                       file: state.fileSelected,
+                      onPressed: () => _documentSelectionModal(),
                     );
                   },
                 ),
@@ -164,18 +169,24 @@ class __ViewState extends State<_View> {
                 ),
                 child: GenericButton(
                   text: "Subir Archivo",
-                  onTap: () {
-                    FocusScope.of(context).unfocus();
+                  onTap: (state.fileSelected != null)
+                      ? () {
+                          FocusScope.of(context).unfocus();
+                          FocusManager.instance.primaryFocus?.unfocus();
 
-                    if (_formKey.currentState!.validate() &&
-                        state.fileSelected != null) {
-                      // final genericCubit = context.read<GeneralCubit>();
-
-                      // cubit.createDocument(
-                      //   category: genericCubit.state.departmentSelected!.id!,
-                      // );
-                    }
-                  },
+                          if (_formKey.currentState!.validate() &&
+                              state.fileSelected != null) {
+                            _cubit.createDocument(
+                              tile: _titleController.text.trim(),
+                              userId: _generalCubit.state.user?.uid,
+                              departmentId:
+                                  _generalCubit.state.departmentSelected?.id,
+                              subjectId:
+                                  _generalCubit.state.subjectSelected?.id,
+                            );
+                          }
+                        }
+                      : null,
                 ),
               );
             },
@@ -187,10 +198,10 @@ class __ViewState extends State<_View> {
 }
 
 class _UploadFile extends StatelessWidget {
-  const _UploadFile({required this.onPressed, this.file});
+  const _UploadFile({this.file, required this.onPressed});
 
-  final VoidCallback onPressed;
   final FileModel? file;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +231,9 @@ class _UploadFile extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              (file != null) ? "${file?.name}" : "Cargar Documento",
+              (file != null)
+                  ? "${file?.name} ${file?.getSizeInFormattedString}"
+                  : "Subir Archivo",
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,

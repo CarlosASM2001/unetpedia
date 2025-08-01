@@ -29,7 +29,7 @@ class UpdatePasswordView extends StatelessWidget {
                 showDialog<void>(
                   context: context,
                   builder: (context) => GenericStatusDialog(
-                    description: state.errorText,
+                    description: state.exception?.details,
                     isErrorDialog: true,
                   ),
                 );
@@ -217,6 +217,7 @@ class __ViewState extends State<_View> {
               text: "Confirmar",
               onTap: () {
                 FocusScope.of(context).unfocus();
+                FocusManager.instance.primaryFocus?.unfocus();
 
                 if (_formKey.currentState!.validate()) {
                   // cubit.changePassword(

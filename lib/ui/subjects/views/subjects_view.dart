@@ -7,6 +7,7 @@ import 'package:unetpedia/models/generic/generic_enums.dart';
 import 'package:unetpedia/core/constants/constants_images.dart';
 import 'package:unetpedia/ui/subjects/views/subject_detail_view.dart';
 
+// Listado de materias del departamente seleccionado
 class SubjectsView extends StatelessWidget {
   const SubjectsView({super.key});
   static const String routeName = 'subjects_view';
@@ -53,7 +54,7 @@ class __ContentState extends State<_Content> {
           case WidgetStatus.loading:
             return const Center(child: LoadingIndicator());
           case WidgetStatus.error:
-            return const Center(child: GenericError());
+            return Center(child: GenericError(error: state.exception?.details));
           case WidgetStatus.success:
             return Column(
               children: [
@@ -94,7 +95,7 @@ class __ContentState extends State<_Content> {
 
                           return GenericCard(
                             title: subject?.name ?? "N/A",
-                            subtitle: "0 Archivos",
+                            subtitle: subject?.getFileCount ?? "N/A",
                             asset: ConstantImages.redCard,
                             onPressed: () {
                               FocusScope.of(context).unfocus();

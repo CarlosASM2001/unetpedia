@@ -37,8 +37,8 @@ class UserResponseModel {
         role: json['role'],
         description: json['description'],
         careerId: json['careerId'],
-        registerDate: (json['registerDate'] as Timestamp).toDate(),
-        lastSignIn: (json['lastSignIn'] as Timestamp).toDate(),
+        registerDate: (json['registerDate'] as Timestamp?)?.toDate(),
+        lastSignIn: (json['lastSignIn'] as Timestamp?)?.toDate(),
       );
 
   Map<String, dynamic> toJson() => {

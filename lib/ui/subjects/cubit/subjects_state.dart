@@ -2,24 +2,20 @@ part of 'subjects_cubit.dart';
 
 class SubjectsState extends Equatable {
   const SubjectsState({
-    this.errorText = "",
+    this.exception,
     this.getDocumentsStatus = WidgetStatus.initial,
-    //this.documents,
-    //this.subjectSelected,
+    this.documents,
     this.documentsQuery = "",
     this.uploadStatus = WidgetStatus.initial,
     this.fileSelected,
-    this.documentDetail,
   });
 
   // General
-  final String errorText;
-  //final SubjectResponseModel? subjectSelected;
+  final DataException? exception;
 
   // Get Documents
   final String documentsQuery;
-  //final DocumentsResponseModel? documents;
-  final DocumentDetail? documentDetail;
+  final List<DocumentModel>? documents;
   final WidgetStatus getDocumentsStatus;
 
   // Upload Document
@@ -28,41 +24,31 @@ class SubjectsState extends Equatable {
 
   @override
   List<Object?> get props => [
-    errorText,
+    exception,
     getDocumentsStatus,
-    //documents,
-    //subjectSelected,
+    documents,
     documentsQuery,
     uploadStatus,
     fileSelected,
-    documentDetail,
   ];
 
   SubjectsState copyWith({
-    String? errorText,
+    DataException? exception,
     WidgetStatus? getDocumentsStatus,
-    //Wrapped<DocumentsResponseModel?>? documents,
-    //Wrapped<SubjectResponseModel?>? subjectSelected,
+    Wrapped<List<DocumentModel>?>? documents,
     String? documentsQuery,
     WidgetStatus? uploadStatus,
     Wrapped<FileModel?>? fileSelected,
-    Wrapped<DocumentDetail?>? documentDetail,
   }) {
     return SubjectsState(
-      errorText: errorText ?? this.errorText,
+      exception: exception ?? this.exception,
       getDocumentsStatus: getDocumentsStatus ?? this.getDocumentsStatus,
-      //documents: documents != null ? documents.value : this.documents,
-      //subjectSelected: subjectSelected != null
-      //    ? subjectSelected.value
-      //    : this.subjectSelected,
+      documents: documents != null ? documents.value : this.documents,
       documentsQuery: documentsQuery ?? this.documentsQuery,
       uploadStatus: uploadStatus ?? this.uploadStatus,
       fileSelected: fileSelected != null
           ? fileSelected.value
           : this.fileSelected,
-      documentDetail: documentDetail != null
-          ? documentDetail.value
-          : this.documentDetail,
     );
   }
 }

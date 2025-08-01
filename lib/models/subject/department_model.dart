@@ -15,7 +15,6 @@ class DepartmentModel {
     );
   }
 
-  // Convertir a Firestore document
   factory DepartmentModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return DepartmentModel(
@@ -26,16 +25,16 @@ class DepartmentModel {
   }
 
   // Convert from JSON
-  factory DepartmentModel.fromJson(Map<String, dynamic> json) {
-    return DepartmentModel(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-    );
-  }
+  // factory DepartmentModel.fromJson(Map<String, dynamic> json) {
+  //   return DepartmentModel(
+  //     id: json['id'],
+  //     name: json['name'],
+  //     email: json['email'],
+  //   );
+  // }
 
   // Convert to JSON
-  Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name, 'email': email};
-  }
+  // Map<String, dynamic> toJson() {
+  //   return {'id': id, 'name': name, 'email': email};
+  // }
 }

@@ -43,7 +43,7 @@ class EditProfileView extends StatelessWidget {
                   context: context,
                   barrierDismissible: false,
                   builder: (context) => GenericStatusDialog(
-                    description: state.errorText,
+                    description: state.exception?.details,
                     isErrorDialog: true,
                   ),
                 );

@@ -41,7 +41,7 @@ class LoginView extends StatelessWidget {
                   context: context,
                   barrierDismissible: false,
                   builder: (context) => GenericStatusDialog(
-                    description: state.errorText,
+                    description: state.exception?.details,
                     isErrorDialog: true,
                   ),
                 );
@@ -205,6 +205,7 @@ class __ContentState extends State<_Content> {
                 text: "Iniciar Sesión",
                 onTap: () {
                   FocusScope.of(context).unfocus();
+                  FocusManager.instance.primaryFocus?.unfocus();
 
                   if (_formKey.currentState!.validate()) {
                     _cubit.login(
