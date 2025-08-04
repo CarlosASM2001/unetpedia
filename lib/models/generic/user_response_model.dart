@@ -27,6 +27,19 @@ class UserResponseModel {
 
   String get fullName => "$name $lastName";
 
+  String get roleParsed {
+    switch (role) {
+      case "user":
+        return "Usuario";
+      case "admin":
+        return "Administrador";
+      case "mentor":
+        return "Tutor";
+      default:
+        return "N/A";
+    }
+  }
+
   factory UserResponseModel.fromJson(Map<String, dynamic> json) =>
       UserResponseModel(
         uid: json['uid'],

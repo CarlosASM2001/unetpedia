@@ -62,7 +62,8 @@ class __ContentState extends State<_Content> {
                 const SizedBox(height: 16),
                 BlocBuilder<GeneralCubit, GeneralState>(
                   buildWhen: (p, c) =>
-                      (p.subjectsFiltered != c.subjectsFiltered),
+                      (p.subjects != c.subjects ||
+                      p.subjectsFiltered != c.subjectsFiltered),
                   builder: (context, state) {
                     // Bandera para renderizar el listado filtrado
                     final bool applyFilter = (state.subjectsFiltered != null);

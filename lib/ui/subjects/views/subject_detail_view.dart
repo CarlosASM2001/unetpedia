@@ -20,12 +20,7 @@ class SubjectDetailView extends StatelessWidget {
         appBar: MainAppBar(
           title: context.read<GeneralCubit>().state.departmentSelected!.name!,
         ),
-        floatingActionButton: GenericIconButton(
-          icon: Icons.add_box_rounded,
-          onPressed: () {
-            Navigator.pushNamed(context, AddSubjectDocumentView.routeName);
-          },
-        ),
+        floatingActionButton: _FloatingComponent(),
         body: const _View(),
       ),
     );
@@ -135,6 +130,36 @@ class __ViewState extends State<_View> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _FloatingComponent extends StatelessWidget {
+  const _FloatingComponent();
+
+  @override
+  Widget build(BuildContext context) {
+    return GenericIconButton(
+      icon: Icons.add_box_rounded,
+      onPressed: () async {
+        await Navigator.pushNamed(
+          context,
+          AddSubjectDocumentView.routeName,
+        ).then((value) {
+          if ((value is! bool) || !context.mounted) return;
+
+          // Evaluando si se ha subido un documento de forma satisfactoria
+          if (value == true) {
+            final generalState = context.read<GeneralCubit>().state;
+
+            // Recargando el listado de documentos
+            context.read<SubjectsCubit>().getFilesBySubject(
+              departmentId: generalState.departmentSelected?.id,
+              subjectId: generalState.subjectSelected?.id,
+            );
+          }
+        });
+      },
     );
   }
 }

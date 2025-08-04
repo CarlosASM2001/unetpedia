@@ -53,6 +53,8 @@ class AddSubjectDocumentView extends StatelessWidget {
                 break;
 
               case WidgetStatus.success:
+                context.read<GeneralCubit>().updateFileCount();
+
                 Navigator.pop(context);
                 showDialog<void>(
                   context: context,
@@ -62,7 +64,7 @@ class AddSubjectDocumentView extends StatelessWidget {
                     child: GenericStatusDialog(
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.pop(context);
+                        Navigator.pop(context, true);
                       },
                     ),
                   ),

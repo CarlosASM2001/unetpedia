@@ -19,7 +19,7 @@ class SubjectModel {
     return SubjectModel(
       id: id ?? this.id,
       name: name ?? this.name,
-      filesCount: filesCount,
+      filesCount: filesCount ?? this.filesCount,
     );
   }
 
@@ -28,7 +28,7 @@ class SubjectModel {
     return SubjectModel(
       id: doc.id,
       name: data['name'],
-      filesCount: data["files_count"],
+      filesCount: data["file_count"],
     );
   }
 

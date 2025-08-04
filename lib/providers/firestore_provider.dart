@@ -202,7 +202,7 @@ class FirestoreProvider {
     required DocumentRequestModel data,
   }) async {
     try {
-      final DocumentReference ref = _db.collection(_filesCollection).doc();
+      final fileRef = _db.collection(_filesCollection).doc();
 
       final departmentRef = _db
           .collection(_departmentsCollection)
@@ -212,13 +212,26 @@ class FirestoreProvider {
           .collection(_subjectsCollection)
           .doc(subjectId);
 
-      final parsed = data.copyWith(
-        owner: _db.collection(_userCollection).doc(userId),
-        department: departmentRef,
-        subject: subjectRef,
-      );
+      // Implementando transaccion para garantiar todas las operaciones
+      // 1. Leer el documento de la materia
+      // 2. Crear el documento en la coleccion files
+      // 3. Incrementar el contador de numero de archivos subidos en la materia
+      await _db.runTransaction((transaction) async {
+        // 1. Leyendo la informacion del documento de la materia.
+        await transaction.get(subjectRef);
 
-      await ref.set(parsed.toJsonCreate(id: ref.id));
+        final parsedData = data.copyWith(
+          owner: _db.collection(_userCollection).doc(userId),
+          department: departmentRef,
+          subject: subjectRef,
+        );
+
+        // 2. Escribiendo el nuevo documento
+        transaction.set(fileRef, parsedData.toJsonCreate(id: fileRef.id));
+
+        // 3. Actualiza el contador de documentos de la materia
+        transaction.update(subjectRef, {'file_count': FieldValue.increment(1)});
+      });
 
       return Right("ok");
     } on FirebaseException catch (e) {

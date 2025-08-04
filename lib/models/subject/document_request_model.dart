@@ -41,7 +41,7 @@ class DocumentRequestModel {
     "id": id,
     'name': name,
     'url': url,
-    "size": size,
+    "size_in_bytes": size,
     "extension": extension,
     'subject': subject,
     'department': department,

@@ -72,8 +72,47 @@ class GeneralCubit extends Cubit<GeneralState> {
     );
   }
 
+  /// Guarda en el estado la materia seleccionada por el usuario
   void selectSubject(SubjectModel? value) =>
       emit(state.copyWith(subjectSelected: Wrapped.value(value)));
+
+  /// Actualiza localmente el contador de archivos de la materia seleccionada
+  void updateFileCount() {
+    if (state.subjectSelected == null || (state.subjects ?? []).isEmpty) return;
+
+    // Se recorre la lista para generar una nueva
+    final List<SubjectModel> newList = state.subjects!.map((e) {
+      // Evaluando el elemento de la lista que necesita ser actualizado
+      if (e.id == state.subjectSelected!.id) {
+        return e.copyWith(filesCount: (e.filesCount ?? 0) + 1);
+      } else {
+        return e;
+      }
+    }).toList();
+
+    List<SubjectModel>? filteredList = [];
+
+    if (((state.subjectsFiltered ?? []).isNotEmpty)) {
+      // Se recorre la lista filtrada para generar una nueva
+      filteredList = state.subjectsFiltered!.map((e) {
+        // Evaluando el elemento de la lista que necesita ser actualizado
+        if (e.id == state.subjectSelected!.id) {
+          return e.copyWith(filesCount: (e.filesCount ?? 0) + 1);
+        } else {
+          return e;
+        }
+      }).toList();
+    }
+
+    emit(
+      state.copyWith(
+        subjects: Wrapped.value(newList),
+        subjectsFiltered: (filteredList.isNotEmpty)
+            ? Wrapped.value(filteredList)
+            : null,
+      ),
+    );
+  }
 
   // =======================================================================
   // Careers
