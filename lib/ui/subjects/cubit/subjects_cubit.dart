@@ -72,6 +72,29 @@ class SubjectsCubit extends Cubit<SubjectsState> {
     );
   }
 
+  Future<void> getFilesByUser(String userId) async {
+    if (state.getDocumentsStatus == WidgetStatus.loading) return;
+    emit(state.copyWith(getDocumentsStatus: WidgetStatus.loading));
+
+    final response = await _firestoreProvider.getFilesByUser(userId: userId);
+
+    return response.fold(
+      (l) {
+        emit(
+          state.copyWith(getDocumentsStatus: WidgetStatus.error, exception: l),
+        );
+      },
+      (r) async {
+        emit(
+          state.copyWith(
+            getDocumentsStatus: WidgetStatus.success,
+            documents: Wrapped.value(r),
+          ),
+        );
+      },
+    );
+  }
+
   /*Future<void> getDocumentDetail() async {
     if (state.getDocumentsStatus == WidgetStatus.loading) return;
     emit(state.copyWith(getDocumentsStatus: WidgetStatus.loading));
