@@ -7,6 +7,7 @@ import 'package:unetpedia/models/generic/generic_enums.dart';
 import 'package:unetpedia/core/constants/constants_images.dart';
 import 'package:unetpedia/ui/departments/views/departaments_view.dart';
 import 'package:unetpedia/ui/qualifications/views/qualifications_view.dart';
+import 'package:unetpedia/ui/qualifications/views/tutors_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -87,7 +88,7 @@ class _HomeViewState extends State<HomeView> {
                               "Encuentra tutor para ayuda en cada materia.",
                           asset: ConstantImages.yellowCard,
                           onPressed: () {
-                            // Navigator.pushNamed(context, TutorsView.routeName);
+                            Navigator.pushNamed(context, TutorsView.routeName);
                           },
                         ),
                         const SizedBox(height: 20),
