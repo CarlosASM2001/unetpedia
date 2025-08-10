@@ -1,7 +1,7 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:unetpedia/ui/qualifications/views/views.dart';
 import 'package:unetpedia/utils/debouncer.dart';
 import 'package:unetpedia/widgets/appbar_layout.dart';
-import 'package:unetpedia/widgets/generic_title.dart';
 import 'package:unetpedia/widgets/inputs/search_input.dart';
 import 'package:unetpedia/widgets/main_appbar.dart';
 
@@ -15,153 +15,216 @@ class TutorsView extends StatefulWidget {
 }
 
 class _TutorsViewState extends State<TutorsView> {
+  final _debouncer = Debouncer(milliseconds: 400);
+  String _query = '';
+
+  // mock data para la UI (cámbialo por tu fuente real)
+  final List<_Tutor> _tutors = const [
+    _Tutor(
+      name: 'Daniela Monsalve',
+      subject: 'Matemática I',
+      price: 5.00,
+      image: 'assets/images/tutor1.jpg',
+    ),
+    _Tutor(
+      name: 'Ivan Reyes',
+      subject: 'Matemática II',
+      price: 5.00,
+      image: 'assets/images/tutor2.jpg',
+    ),
+    _Tutor(
+      name: 'Jesus Ortega',
+      subject: 'Matemática I',
+      price: 5.00,
+      image: 'assets/images/tutor3.jpg',
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final filtered = _tutors
+        .where(
+          (t) =>
+              t.name.toLowerCase().contains(_query.toLowerCase()) ||
+              t.subject.toLowerCase().contains(_query.toLowerCase()),
+        )
+        .toList();
+
     return Scaffold(
-      appBar: const MainAppBar(title: "Tutores"),
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: const MainAppBar(title: "Unet Pedia"),
       body: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          _Header(),
-          const SizedBox(height: 28),
-          Expanded(
-            child: Column(
-              children: [
-                const GenericTitle(title: "Tutores Disponibles"),
-                const SizedBox(height: 16),
-                const _Content(),
-              ],
+          // Header negro + buscador (usa tu AppBarLayout para mantener estilo del resto de la app)
+          AppBarLayout(
+            child: SearchInput(
+              hintText: "Buscar Tutores",
+              prefixIcon: Icons.search_rounded,
+              onChange: (v) {
+                _debouncer.run(() => setState(() => _query = v));
+              },
             ),
-          )
-          //Expanded(
-          //  child: BlocBuilder<GeneralCubit, GeneralState>(
-          //      buildWhen: (p, c) => (p.subjectsStatus != c.subjectsStatus),
-          //      builder: (context, state) {
-          //        switch (state.subjectsStatus) {
-          //          case WidgetStatus.loading:
-          //            return const Center(child: LoadingIndicator());
-          //          case WidgetStatus.error:
-          //            return const Center(child: GenericErrorComponent());
-          //          case WidgetStatus.success:
-          //            return Column(
-          //              children: [
-          //                GenericTitle(
-          //                    title: "Tutores Disponibles"),
-          //                const SizedBox(height: 16),
-          //                const _Content(),
-          //              ],
-          //            );
-          //          default:
-          //            return const SizedBox.shrink();
-          //        }
-          //      }),
-          //),
+          ),
+          const SizedBox(height: 12),
+          // Píldora "Tutores"
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F172A),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Text(
+                  'Tutores',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Listado
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 12.0,
+              ),
+              itemCount: filtered.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 14),
+              itemBuilder: (context, i) => _TutorCard(tutor: filtered[i]),
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class _Content extends StatefulWidget {
-  const _Content();
+class _TutorCard extends StatelessWidget {
+  const _TutorCard({required this.tutor});
 
-  @override
-  State<_Content> createState() => __ContentState();
-}
+  final _Tutor tutor;
 
-class __ContentState extends State<_Content> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.separated(
-        shrinkWrap: true,
-        //controller: scrollController,
-        itemCount: 10,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        itemBuilder: (context, index) {
-          return Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
+    return InkWell(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          TutorDetailView.routeName,
+          arguments: TutorDetailArgs(
+            name: tutor.name,
+            subject: tutor.subject,
+            image: tutor.image, // soporta asset o http
+            about:
+                "Soy estudiante de Ing. Informatica, y he eximido mis materias. Me gustan las matemáticas y tengo buena pedagogía para enseñarlas.",
+            hours: 120,
+            students: 100,
+            rating: 4.8,
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Ink(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: const [
+            BoxShadow(
+              blurRadius: 16,
+              offset: Offset(0, 4),
+              color: Color(0x14000000), // sombra suave
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  flex: 3,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Container(
-                        width: 80,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Flexible(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Ivan Reyes",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "Matemática I",
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF64748B),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      )),
-                    ],
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: Row(
+            children: [
+              // Avatar con borde azul como en el mock
+              Container(
+                width: 100,
+                height: 130,
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 25, 41, 76),
+                    width: 2,
                   ),
                 ),
-                const SizedBox(width: 4),
-                const Flexible(
-                    child: Text(
-                  "\$5.00",
-                ))
-              ],
-            ),
-          );
-        },
-        separatorBuilder: (context, index) => const SizedBox(height: 16),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(80),
+                  child: Image.asset(tutor.image, fit: BoxFit.cover),
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Nombre + materia
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tutor.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      tutor.subject,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF64748B),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Precio a la derecha
+              Text(
+                "\$${tutor.price.toStringAsFixed(2)}",
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
+              const SizedBox(width: 6),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-class _Header extends StatelessWidget {
-  _Header();
+class _Tutor {
+  final String name;
+  final String subject;
+  final double price;
+  final String image;
 
-  final _debouncer = Debouncer(milliseconds: 500);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBarLayout(
-      child: SearchInput(
-        //controller: TextEditingController(
-        //    text: context.read<GeneralCubit>().state.subjectQuery),
-        hintText: "Buscar Materia",
-        prefixIcon: Icons.search_rounded,
-        onChange: (value) {
-          _debouncer.run(() {
-            //context.read<GeneralCubit>().setSubjectQuery(value);
-            //context.read<GeneralCubit>().getSubjects();
-          });
-        },
-      ),
-    );
-  }
-}*/
+  const _Tutor({
+    required this.name,
+    required this.subject,
+    required this.price,
+    required this.image,
+  });
+}
