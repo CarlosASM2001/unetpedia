@@ -1,13 +1,13 @@
-import 'dart:developer';
 import 'dart:io';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:unetpedia/models/generic/file_model.dart';
 import 'package:unetpedia/models/generic/photo_model.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class GenericUtils {
   // ========================================================================
@@ -32,8 +32,9 @@ class GenericUtils {
               final extension = pickedFile.path.split('.').last.toLowerCase();
 
               // Validando extension del archivo
-              final allowedExtensionValues =
-                  allowedExtensions.map((e) => e.toLowerCase()).toList();
+              final allowedExtensionValues = allowedExtensions
+                  .map((e) => e.toLowerCase())
+                  .toList();
 
               if (allowedExtensionValues.contains(extension)) {
                 final file = File(pickedFile.path);
@@ -57,7 +58,9 @@ class GenericUtils {
             if (cameraPermission.isDenied) {
             } else {
               getImageFromDevice(
-                  isFromCamera: isFromCamera, onGetImage: onGetImage);
+                isFromCamera: isFromCamera,
+                onGetImage: onGetImage,
+              );
             }
           });
         }
@@ -70,12 +73,12 @@ class GenericUtils {
   // Seleccion de archivoo desde el dispositivo
   static Future<void> getFileFromDevice({
     required void Function(FileModel) onGetFiles,
-    List<String> allowedExtensions = const ["pdf"],
+    // List<String> allowedExtensions = const ["pdf"],
   }) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
+      type: FileType.any,
       allowMultiple: false,
-      allowedExtensions: allowedExtensions,
+      // allowedExtensions: allowedExtensions,
     );
 
     if (result != null) {
@@ -91,60 +94,69 @@ class GenericUtils {
     }
   }
 
-  /////////////////////////
-  /// TODO mejorar
+  // ========================================================================
+  // File
+  // ========================================================================
 
+  // static Future<void> _openFile(File file) async {
+  //   try {
+  //     await OpenFilex.open(file.path);
+  //   } catch (e) {
+  //     throw Exception('Error open filex: $e');
+  //   }
+  // }
+
+  // Gets Download Path
   static Future<String> _findLocalPathDownloads() async {
     if (Platform.isAndroid) {
-      Directory directory = Directory('/storage/emulated/0/Download/');
-      return directory.path;
+      final directory = Directory('/storage/emulated/0/Download');
+      if (await directory.exists()) {
+        return directory.path;
+      } else {
+        final directory = (await getExternalStorageDirectory())!;
+        return directory.path;
+      }
     } else {
-      var directory = await getApplicationDocumentsDirectory();
-      return '${directory.path}${Platform.pathSeparator}Download${Platform.pathSeparator}';
+      final directory = await getApplicationDocumentsDirectory();
+      return '${directory.path}${Platform.pathSeparator}Download';
     }
   }
 
-  static Future<File?> checkDownloadFile(
-      {required String url,
-      required String fileName,
-      bool downloadPublic = true}) async {
+  static Future<void> downloadFile({
+    required String url,
+    required String fileName,
+    void Function(int count, int total)? onReceiveProgress,
+    void Function()? onAlreadyExists,
+  }) async {
     try {
-      Directory dir = await getApplicationDocumentsDirectory();
-      String? localPath;
-      if (dir.path.endsWith(Platform.pathSeparator) ||
-          fileName.startsWith(Platform.pathSeparator)) {
-        localPath = '${dir.path}$fileName';
-      } else {
-        localPath = '${dir.path}${Platform.pathSeparator}$fileName';
-      }
+      //final permissions = await _checkStoragePermission();
+      //if (!permissions) return;
 
-      File file = File(localPath);
+      final String downloadsPath = await _findLocalPathDownloads();
+      late String path;
+
+      // Adding File Extension if needed
+      // if (fileName.split('.').last == url.split('.').last) {
+      //   path = '$downloadsPath${Platform.pathSeparator}$fileName';
+      // } else {
+      //   path =
+      //       '$downloadsPath${Platform.pathSeparator}$fileName.${url.split('.').last}';
+      // }
+
+      path = '$downloadsPath${Platform.pathSeparator}$fileName';
+
+      final file = File(path);
+
+      // Checking if file already exists
       if (!(await file.exists())) {
-        await Dio().download(url, localPath);
+        await Dio().download(url, path, onReceiveProgress: onReceiveProgress);
+        //await _openFile(file);
+      } else {
+        //await _openFile(file);
+        if (onAlreadyExists != null) onAlreadyExists();
       }
-      if (downloadPublic) {
-        try {
-          String path = await _findLocalPathDownloads(/*type*/);
-          String publicPath = '$path$fileName';
-          File publicFile = File(publicPath);
-          if (!(await publicFile.exists())) {
-            await file.copy(publicFile.path);
-          } else {
-            //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            //    content:
-            //        Text('El Archivo ya esta en su carpeta de descargas')));
-          }
-        } catch (e) {
-          throw 'Cant download file in public folder';
-        }
-      }
-      //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      //    content: Text('Archivo guardado en su carpeta de descargas')));
-      return file;
     } catch (e) {
-      //ScaffoldMessenger.of(context).showSnackBar(
-      //    const SnackBar(content: Text('No se puede descargar el archivo')));
-      return null;
+      throw Exception('Error downloading file: $e');
     }
   }
 }

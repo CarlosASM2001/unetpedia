@@ -84,7 +84,7 @@ class GeneralCubit extends Cubit<GeneralState> {
     final List<SubjectModel> newList = state.subjects!.map((e) {
       // Evaluando el elemento de la lista que necesita ser actualizado
       if (e.id == state.subjectSelected!.id) {
-        return e.copyWith(filesCount: (e.filesCount ?? 0) + 1);
+        return e.copyWith(fileCount: (e.fileCount ?? 0) + 1);
       } else {
         return e;
       }
@@ -97,7 +97,7 @@ class GeneralCubit extends Cubit<GeneralState> {
       filteredList = state.subjectsFiltered!.map((e) {
         // Evaluando el elemento de la lista que necesita ser actualizado
         if (e.id == state.subjectSelected!.id) {
-          return e.copyWith(filesCount: (e.filesCount ?? 0) + 1);
+          return e.copyWith(fileCount: (e.fileCount ?? 0) + 1);
         } else {
           return e;
         }

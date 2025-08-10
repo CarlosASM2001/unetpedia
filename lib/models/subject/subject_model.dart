@@ -3,23 +3,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class SubjectModel {
   final String? id;
   final String? name;
-  final int? filesCount;
+  final int? fileCount;
 
-  SubjectModel({this.id, this.name, this.filesCount});
+  SubjectModel({this.id, this.name, this.fileCount});
 
   String get getFileCount {
-    if (filesCount == null) return "Sin Archivos";
+    if (fileCount == null || fileCount == 0) return "Sin Archivos";
 
-    if (filesCount == 1) return "1 Archivo";
+    if (fileCount == 1) return "1 Archivo";
 
-    return "$filesCount Archivos";
+    return "$fileCount Archivos";
   }
 
-  SubjectModel copyWith({String? id, String? name, int? filesCount}) {
+  SubjectModel copyWith({String? id, String? name, int? fileCount}) {
     return SubjectModel(
       id: id ?? this.id,
       name: name ?? this.name,
-      filesCount: filesCount ?? this.filesCount,
+      fileCount: fileCount ?? this.fileCount,
     );
   }
 
@@ -28,7 +28,7 @@ class SubjectModel {
     return SubjectModel(
       id: doc.id,
       name: data['name'],
-      filesCount: data["file_count"],
+      fileCount: data["file_count"],
     );
   }
 

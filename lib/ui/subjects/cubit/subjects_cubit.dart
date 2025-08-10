@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:unetpedia/utils/generic_utils.dart';
 import 'package:unetpedia/models/generic/wrapped.dart';
 import 'package:unetpedia/models/generic/file_model.dart';
 import 'package:unetpedia/providers/firestore_provider.dart';
@@ -27,6 +28,14 @@ class SubjectsCubit extends Cubit<SubjectsState> {
   void selectFile(FileModel value) =>
       emit(state.copyWith(fileSelected: Wrapped.value(value)));
 
+  void setDocument(DocumentModel? value) =>
+      emit(state.copyWith(documentSelected: Wrapped.value(value)));
+
+  void _setDownloadPercent(int count, int total) {
+    if (total >= 1) {
+      emit(state.copyWith(downloadPercent: Wrapped.value(count / total)));
+    }
+  }
   // ========================================================================
   // Get Documents
   // ========================================================================
@@ -128,7 +137,7 @@ class SubjectsCubit extends Cubit<SubjectsState> {
 
   // Se sube un archivo al storage y se crea el documento en la base de datos
   Future<void> createDocument({
-    required String tile,
+    required String description,
     required String? userId,
     required String? departmentId,
     required String? subjectId,
@@ -157,7 +166,7 @@ class SubjectsCubit extends Cubit<SubjectsState> {
     final fileUrl = await _firestoreProvider.uploadFile(
       storagePath: StoragePath.files,
       path:
-          "$userId/${DateTime.now().toString()}${state.fileSelected!.getExtension}",
+          "$userId/${state.fileSelected?.name}${state.fileSelected!.getExtension}",
       file: state.fileSelected!.file,
     );
 
@@ -167,7 +176,8 @@ class SubjectsCubit extends Cubit<SubjectsState> {
       departmentId: departmentId!,
       subjectId: subjectId!,
       data: DocumentRequestModel(
-        name: tile,
+        name: state.fileSelected!.name,
+        description: description,
         url: fileUrl,
         size: state.fileSelected!.getSizeInBytes,
         extension: state.fileSelected!.getExtension,
@@ -185,20 +195,40 @@ class SubjectsCubit extends Cubit<SubjectsState> {
     );
   }
 
-  // Download
-  /*Future<void> _download() async {
-    final file = await GenericUtils.checkDownloadFile(
-      url: state.documentDetail!.url!,
-      fileName: state.documentDetail!.name!,
-    );
+  // ========================================================================
+  // Download Files
+  // ========================================================================
 
+  Future<void> downloadFile({void Function()? onAlreadyExists}) async {
+    if (state.getDocumentsStatus == WidgetStatus.loading ||
+        state.documentSelected == null) {
+      return;
+    }
     emit(
       state.copyWith(
-        fileSelected: Wrapped.value(
-          FileModel(id: "0", name: "name", file: file!),
-        ),
-        getDocumentsStatus: WidgetStatus.success,
+        getDocumentsStatus: WidgetStatus.loading,
+        downloadPercent: Wrapped.value(null),
       ),
     );
-  }*/
+
+    try {
+      await GenericUtils.downloadFile(
+        url: state.documentSelected!.url!,
+        fileName: state.documentSelected!.name!,
+        onReceiveProgress: (count, total) => _setDownloadPercent(count, total),
+        onAlreadyExists: () {
+          if (onAlreadyExists != null) onAlreadyExists();
+        },
+      );
+
+      emit(state.copyWith(getDocumentsStatus: WidgetStatus.success));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          getDocumentsStatus: WidgetStatus.error,
+          exception: DataException(details: e.toString()),
+        ),
+      );
+    }
+  }
 }

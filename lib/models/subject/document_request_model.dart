@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DocumentRequestModel {
   final String name;
+  final String description;
   final String url;
   final String extension;
   final int size;
@@ -11,6 +12,7 @@ class DocumentRequestModel {
 
   DocumentRequestModel({
     required this.name,
+    required this.description,
     required this.url,
     required this.extension,
     required this.size,
@@ -21,6 +23,7 @@ class DocumentRequestModel {
 
   DocumentRequestModel copyWith({
     String? name,
+    String? description,
     String? url,
     String? extension,
     int? size,
@@ -29,6 +32,7 @@ class DocumentRequestModel {
     DocumentReference? owner,
   }) => DocumentRequestModel(
     name: name ?? this.name,
+    description: description ?? this.description,
     url: url ?? this.url,
     size: size ?? this.size,
     extension: extension ?? this.extension,
@@ -40,6 +44,7 @@ class DocumentRequestModel {
   Map<String, dynamic> toJsonCreate({required String id}) => {
     "id": id,
     'name': name,
+    "description": description,
     'url': url,
     "size_in_bytes": size,
     "extension": extension,

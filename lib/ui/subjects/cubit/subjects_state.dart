@@ -8,15 +8,19 @@ class SubjectsState extends Equatable {
     this.documentsQuery = "",
     this.uploadStatus = WidgetStatus.initial,
     this.fileSelected,
+    this.documentSelected,
+    this.downloadPercent,
   });
 
   // General
   final DataException? exception;
+  final double? downloadPercent;
 
   // Get Documents
   final String documentsQuery;
   final List<DocumentModel>? documents;
   final WidgetStatus getDocumentsStatus;
+  final DocumentModel? documentSelected;
 
   // Upload Document
   final WidgetStatus uploadStatus;
@@ -30,6 +34,8 @@ class SubjectsState extends Equatable {
     documentsQuery,
     uploadStatus,
     fileSelected,
+    documentSelected,
+    downloadPercent,
   ];
 
   SubjectsState copyWith({
@@ -39,6 +45,8 @@ class SubjectsState extends Equatable {
     String? documentsQuery,
     WidgetStatus? uploadStatus,
     Wrapped<FileModel?>? fileSelected,
+    Wrapped<DocumentModel?>? documentSelected,
+    Wrapped<double?>? downloadPercent,
   }) {
     return SubjectsState(
       exception: exception ?? this.exception,
@@ -49,6 +57,12 @@ class SubjectsState extends Equatable {
       fileSelected: fileSelected != null
           ? fileSelected.value
           : this.fileSelected,
+      documentSelected: documentSelected != null
+          ? documentSelected.value
+          : this.documentSelected,
+      downloadPercent: downloadPercent != null
+          ? downloadPercent.value
+          : this.downloadPercent,
     );
   }
 }

@@ -104,10 +104,16 @@ class __ViewState extends State<_View> {
                                         state.documents?[index].name ?? "N/A",
                                     asset: ConstantImages.yellowCard,
                                     onPressed: () {
-                                      //Navigator.pushNamed(
-                                      //  context,
-                                      //  SubjectDocumentView.routeName,
-                                      //);
+                                      Navigator.push<void>(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return SubjectDocumentView(
+                                              document: state.documents?[index],
+                                            );
+                                          },
+                                        ),
+                                      );
                                     },
                                     onWatch: () {
                                       //Navigator.pushNamed(

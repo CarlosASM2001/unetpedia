@@ -3,7 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DocumentModel {
   final String? id;
   final String? name;
+  final String? description;
   final String? url;
+  final int? size;
+  final String? extension;
   final DocumentReference? subject;
   final DocumentReference? department;
   final DocumentReference? owner;
@@ -13,7 +16,10 @@ class DocumentModel {
   DocumentModel({
     this.id,
     this.name,
+    this.description,
     this.url,
+    this.size,
+    this.extension,
     this.subject,
     this.department,
     this.owner,
@@ -40,7 +46,10 @@ class DocumentModel {
     return DocumentModel(
       id: doc.id,
       name: data['name'],
+      description: data["description"],
       url: data["url"],
+      size: data["size_in_bytes"],
+      extension: data["extension"],
       subject: data["subject"],
       department: data["department"],
       owner: data["owner"],
@@ -49,14 +58,14 @@ class DocumentModel {
     );
   }
 
-  factory DocumentModel.fromJson(Map<String, dynamic> json) => DocumentModel(
-    id: json["id"],
-    name: json["name"],
-    url: json["url"],
-    subject: json["subject"],
-    department: json["department"],
-    owner: json["owner"],
-    createdAt: (json['created_at'] as Timestamp?)?.toDate(),
-    updatedAt: (json['updated_at'] as Timestamp?)?.toDate(),
-  );
+  // factory DocumentModel.fromJson(Map<String, dynamic> json) => DocumentModel(
+  //   id: json["id"],
+  //   name: json["name"],
+  //   url: json["url"],
+  //   subject: json["subject"],
+  //   department: json["department"],
+  //   owner: json["owner"],
+  //   createdAt: (json['created_at'] as Timestamp?)?.toDate(),
+  //   updatedAt: (json['updated_at'] as Timestamp?)?.toDate(),
+  // );
 }

@@ -23,7 +23,6 @@ class AddSubjectDocumentView extends StatelessWidget {
     return BlocProvider(
       create: (context) => SubjectsCubit(),
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
         appBar: MainAppBar(title: "Subir Archivo", isWhite: true),
         body: BlocListener<SubjectsCubit, SubjectsState>(
           listenWhen: (p, c) => (p.uploadStatus != c.uploadStatus),
@@ -94,20 +93,20 @@ class __ViewState extends State<_View> {
 
   late SubjectsCubit _cubit;
   late GeneralCubit _generalCubit;
-  late TextEditingController _titleController;
+  late TextEditingController _descriptionCont;
 
   @override
   void initState() {
     _cubit = context.read<SubjectsCubit>();
     _generalCubit = context.read<GeneralCubit>();
 
-    _titleController = TextEditingController();
+    _descriptionCont = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
-    _titleController.dispose();
+    _descriptionCont.dispose();
     super.dispose();
   }
 
@@ -137,28 +136,75 @@ class __ViewState extends State<_View> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            child: Column(
-              children: [
-                FormInput(
-                  labelText: "Título",
-                  hintText: "Ingresar título",
-                  controller: _titleController,
-                  keyboardType: TextInputType.text,
-                  validator: (value) => Validators.emptyValidation(value),
+          Expanded(
+            child: Scrollbar(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
                 ),
-                const SizedBox(height: 24),
-                BlocBuilder<SubjectsCubit, SubjectsState>(
-                  buildWhen: (p, c) => (p.fileSelected != c.fileSelected),
-                  builder: (context, state) {
-                    return _UploadFile(
-                      file: state.fileSelected,
-                      onPressed: () => _documentSelectionModal(),
-                    );
-                  },
-                ),
-              ],
+                children: [
+                  FormInput(
+                    readOnly: true,
+                    labelText: "Departamento",
+                    controller: TextEditingController(
+                      text: _generalCubit.state.departmentSelected?.name,
+                    ),
+                    keyboardType: TextInputType.text,
+                  ),
+                  const SizedBox(height: 24),
+                  FormInput(
+                    readOnly: true,
+                    labelText: "Asignatura",
+                    controller: TextEditingController(
+                      text: _generalCubit.state.subjectSelected?.name,
+                    ),
+                    keyboardType: TextInputType.text,
+                  ),
+                  const SizedBox(height: 24),
+                  FormInput(
+                    labelText: "Descripción",
+                    hintText: "Ingresar descripción",
+                    controller: _descriptionCont,
+                    keyboardType: TextInputType.text,
+                    validator: (value) => Validators.emptyValidation(value),
+                  ),
+                  const SizedBox(height: 24),
+                  BlocBuilder<SubjectsCubit, SubjectsState>(
+                    buildWhen: (p, c) => (p.fileSelected != c.fileSelected),
+                    builder: (context, state) {
+                      return _UploadFile(
+                        file: state.fileSelected,
+                        onPressed: () => _documentSelectionModal(),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  BlocBuilder<SubjectsCubit, SubjectsState>(
+                    buildWhen: (p, c) => (p.fileSelected != c.fileSelected),
+                    builder: (context, state) {
+                      return (state.fileSelected == null)
+                          ? SizedBox.shrink()
+                          : Text(
+                              ((state.fileSelected?.getSizeInBytes ?? 0) >
+                                      30000000)
+                                  ? "Tamaño máximo 30MB"
+                                  : "",
+                              style: TextStyle(color: Colors.red),
+                            );
+                    },
+                  ),
+                  Text(
+                    '''¡Atención! 🧐 Revisa que este material sea para el '''
+                    '''departamento y la asignatura que has seleccionado. '''
+                    '''Contamos contigo para mantener la plataforma ordenada.''',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           BlocBuilder<SubjectsCubit, SubjectsState>(
@@ -171,7 +217,10 @@ class __ViewState extends State<_View> {
                 ),
                 child: GenericButton(
                   text: "Subir Archivo",
-                  onTap: (state.fileSelected != null)
+                  onTap:
+                      (state.fileSelected != null &&
+                          ((state.fileSelected?.getSizeInBytes ?? 0) <=
+                              30000000))
                       ? () {
                           FocusScope.of(context).unfocus();
                           FocusManager.instance.primaryFocus?.unfocus();
@@ -179,7 +228,7 @@ class __ViewState extends State<_View> {
                           if (_formKey.currentState!.validate() &&
                               state.fileSelected != null) {
                             _cubit.createDocument(
-                              tile: _titleController.text.trim(),
+                              description: _descriptionCont.text.trim(),
                               userId: _generalCubit.state.user?.uid,
                               departmentId:
                                   _generalCubit.state.departmentSelected?.id,
@@ -234,8 +283,9 @@ class _UploadFile extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               (file != null)
-                  ? "${file?.name} ${file?.getSizeInFormattedString}"
+                  ? "${file?.name} (${file?.getSizeInFormattedString})"
                   : "Subir Archivo",
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
@@ -244,6 +294,17 @@ class _UploadFile extends StatelessWidget {
                     : const Color(0xFFAFAFAF),
               ),
             ),
+            if (file == null) ...[
+              const SizedBox(height: 8),
+              Text(
+                "Tamaño máximo: 30MB",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFFAFAFAF),
+                ),
+              ),
+            ],
           ],
         ),
       ),
